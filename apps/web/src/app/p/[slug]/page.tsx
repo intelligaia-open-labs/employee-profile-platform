@@ -40,10 +40,7 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   return (
-    <main
-      className="min-h-screen"
-      style={{ backgroundColor: "var(--profile-bg)" }}
-    >
+    <main className="min-h-screen bg-[#f0f0f0] flex items-start justify-center py-4 px-4">
       <ProfileCard employee={employee} />
     </main>
   );

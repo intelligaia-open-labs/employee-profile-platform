@@ -26,8 +26,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-display)", "sans-serif"],
-        body: ["var(--font-body)", "Georgia", "serif"],
+        montserrat: ["var(--font-montserrat)", "sans-serif"],
       },
       keyframes: {
         "fade-up": {
