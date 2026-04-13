@@ -85,6 +85,7 @@ export function ProfileCard({ employee }: Props) {
         backgroundSize: "cover",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
 
