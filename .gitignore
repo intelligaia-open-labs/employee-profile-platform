@@ -1,0 +1,11 @@
+node_modules
+dist
+.next
+.env
+.env.local
+*.log
+uploads/profiles/*
+uploads/qrcodes/*
+!uploads/profiles/.gitkeep
+!uploads/qrcodes/.gitkeep
+.claude/

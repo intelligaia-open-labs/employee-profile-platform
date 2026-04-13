@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id            String   @id @default(uuid()) @db.Uuid
+  email         String   @unique
+  password_hash String
+  role          String   @default("admin")
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("admins")
+}
+
+model Employee {
+  id            String   @id @default(uuid()) @db.Uuid
+  slug          String   @unique
+  full_name     String
+  designation   String
+  bio           String?
+  profile_image String?
+  email         String
+  phone         String
+  linkedin_url  String?
+  website_url   String?
+  address       String?
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  social_links SocialLink[]
+  qr_code      QRCode?
+
+  @@index([slug])
+  @@index([is_active])
+  @@map("employees")
+}
+
+model SocialLink {
+  id          String   @id @default(uuid()) @db.Uuid
+  employee_id String   @db.Uuid
+  platform    String
+  url         String
+  created_at  DateTime @default(now())
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@map("social_links")
+}
+
+model QRCode {
+  id          String   @id @default(uuid()) @db.Uuid
+  employee_id String   @unique @db.Uuid
+  qr_url      String
+  scan_count  Int      @default(0)
+  created_at  DateTime @default(now())
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@map("qr_codes")
+}

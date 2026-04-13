@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --ink: oklch(0.22 0.03 260);
+    --ink-secondary: oklch(0.45 0.02 260);
+    --ink-tertiary: oklch(0.60 0.015 260);
+    --surface: oklch(0.98 0.004 260);
+    --surface-raised: oklch(0.995 0.002 260);
+    --border: oklch(0.91 0.008 260);
+    --border-strong: oklch(0.84 0.012 260);
+    --accent: oklch(0.32 0.10 260);
+    --accent-hover: oklch(0.27 0.08 260);
+    --accent-subtle: oklch(0.95 0.015 260);
+    --success: oklch(0.55 0.15 150);
+    --danger: oklch(0.55 0.15 25);
+    --danger-subtle: oklch(0.94 0.03 25);
+  }
+
+  *,
+  *::before,
+  *::after {
+    border-color: var(--border);
+  }
+
+  body {
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .stagger-1 { animation-delay: 0ms; }
+  .stagger-2 { animation-delay: 80ms; }
+  .stagger-3 { animation-delay: 160ms; }
+  .stagger-4 { animation-delay: 240ms; }
+  .stagger-5 { animation-delay: 320ms; }
+  .stagger-6 { animation-delay: 400ms; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

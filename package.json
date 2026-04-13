@@ -1,0 +1,21 @@
+{
+  "name": "business-profile",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm run dev -w apps/api",
+    "dev:web": "npm run dev -w apps/web",
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "build": "npm run build -w packages/shared && npm run build -w packages/db && npm run build -w apps/api && npm run build -w apps/web",
+    "db:generate": "npm run generate -w packages/db",
+    "db:push": "npm run push -w packages/db",
+    "db:seed": "npm run seed -w packages/db"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.4.5"
+  }
+}
