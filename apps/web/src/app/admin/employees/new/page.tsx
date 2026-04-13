@@ -18,14 +18,24 @@ export default function NewEmployeePage() {
   return (
     <div className="min-h-screen bg-surface">
       <header className="border-b">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center gap-4">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin"
+              className="text-sm text-ink-tertiary hover:text-ink transition-colors"
+            >
+              &larr; Back
+            </Link>
+            <span className="text-sm font-semibold text-ink">
+              New Employee
+            </span>
+          </div>
           <Link
             href="/admin"
-            className="text-sm text-ink-tertiary hover:text-ink transition-colors"
+            className="text-sm font-bold tracking-tight text-ink-tertiary"
           >
-            &larr; Dashboard
+            Business Profile
           </Link>
-          <h1 className="text-sm font-semibold text-ink">New Employee</h1>
         </div>
       </header>
       <main className="py-10 px-6">

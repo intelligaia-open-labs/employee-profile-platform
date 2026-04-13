@@ -40,7 +40,10 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   return (
-    <main className="min-h-screen bg-surface">
+    <main
+      className="min-h-screen"
+      style={{ backgroundColor: "var(--profile-bg)" }}
+    >
       <ProfileCard employee={employee} />
     </main>
   );

@@ -18,7 +18,7 @@ interface SocialLinkInput {
 }
 
 const inputClass =
-  "w-full px-3.5 py-2.5 bg-surface-raised border rounded-lg text-ink placeholder:text-ink-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors text-sm";
+  "w-full px-3.5 py-2.5 bg-surface-raised border rounded-lg text-ink text-sm placeholder:text-ink-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors";
 
 export function EmployeeForm({ employee }: Props) {
   const router = useRouter();
@@ -36,7 +36,10 @@ export function EmployeeForm({ employee }: Props) {
   });
 
   const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>(
-    employee?.social_links?.map((s) => ({ platform: s.platform, url: s.url })) ?? [],
+    employee?.social_links?.map((s) => ({
+      platform: s.platform,
+      url: s.url,
+    })) ?? [],
   );
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -61,7 +64,11 @@ export function EmployeeForm({ employee }: Props) {
     setSocialLinks((prev) => [...prev, { platform: "", url: "" }]);
   }
 
-  function updateSocialLink(index: number, field: keyof SocialLinkInput, value: string) {
+  function updateSocialLink(
+    index: number,
+    field: keyof SocialLinkInput,
+    value: string,
+  ) {
     setSocialLinks((prev) =>
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
     );
@@ -112,190 +119,228 @@ export function EmployeeForm({ employee }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
       {error && (
-        <div className="py-3 px-4 bg-danger-subtle text-danger text-sm rounded-lg">
+        <div className="mb-8 py-3 px-4 bg-danger-subtle text-danger text-sm rounded-lg">
           {error}
         </div>
       )}
 
-      {/* Profile Image */}
-      <div>
-        <label className="block text-sm font-medium text-ink-secondary mb-3">
-          Profile Image
-        </label>
-        <div className="flex items-center gap-5">
+      {/* ── Section: Profile ── */}
+      <fieldset className="space-y-6">
+        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
+          Profile
+        </legend>
+
+        {/* Image upload */}
+        <label className="flex items-center gap-5 cursor-pointer group">
           {imagePreview ? (
             <Image
               src={imagePreview}
               alt="Preview"
-              width={72}
-              height={72}
-              className="rounded-xl object-cover w-[72px] h-[72px]"
+              width={80}
+              height={80}
+              className="w-20 h-20 rounded-xl object-cover"
             />
           ) : (
-            <div className="w-[72px] h-[72px] rounded-xl bg-accent-subtle flex items-center justify-center text-sm text-ink-tertiary">
-              No image
+            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[var(--border-strong)] flex flex-col items-center justify-center text-ink-tertiary group-hover:border-accent group-hover:text-accent transition-colors">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
+              </svg>
+              <span className="text-[10px] mt-1 font-medium">Upload</span>
             </div>
           )}
+          <div>
+            <p className="text-sm font-medium text-ink-secondary group-hover:text-ink transition-colors">
+              Profile photo
+            </p>
+            <p className="text-xs text-ink-tertiary mt-0.5">
+              JPEG, PNG or WebP. Max 5 MB.
+            </p>
+          </div>
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
             onChange={handleImageChange}
-            className="text-sm text-ink-secondary file:mr-3 file:py-2 file:px-4 file:border file:border-[var(--border)] file:rounded-lg file:bg-surface-raised file:text-ink-secondary file:text-sm file:font-medium file:cursor-pointer hover:file:bg-accent-subtle file:transition-colors"
+            className="hidden"
           />
-        </div>
-      </div>
-
-      {/* Basic Info */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Full Name *
-          </label>
-          <input
-            required
-            value={form.full_name}
-            onChange={(e) => handleChange("full_name", e.target.value)}
-            className={inputClass}
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Designation *
-          </label>
-          <input
-            required
-            value={form.designation}
-            onChange={(e) => handleChange("designation", e.target.value)}
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-          Bio
         </label>
-        <textarea
-          rows={3}
-          value={form.bio}
-          onChange={(e) => handleChange("bio", e.target.value)}
-          className={inputClass}
-        />
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              Full Name *
+            </label>
+            <input
+              required
+              value={form.full_name}
+              onChange={(e) => handleChange("full_name", e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              Designation *
+            </label>
+            <input
+              required
+              value={form.designation}
+              onChange={(e) => handleChange("designation", e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Email *
+            Bio
           </label>
-          <input
-            type="email"
-            required
-            value={form.email}
-            onChange={(e) => handleChange("email", e.target.value)}
+          <textarea
+            rows={3}
+            value={form.bio}
+            onChange={(e) => handleChange("bio", e.target.value)}
             className={inputClass}
           />
         </div>
+      </fieldset>
+
+      {/* ── Section: Contact ── */}
+      <fieldset className="mt-10 space-y-5">
+        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
+          Contact
+        </legend>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              Email *
+            </label>
+            <input
+              type="email"
+              required
+              value={form.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              Phone *
+            </label>
+            <input
+              required
+              value={form.phone}
+              onChange={(e) => handleChange("phone", e.target.value)}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Phone *
+            Address
           </label>
           <input
-            required
-            value={form.phone}
-            onChange={(e) => handleChange("phone", e.target.value)}
+            value={form.address}
+            onChange={(e) => handleChange("address", e.target.value)}
             className={inputClass}
           />
         </div>
-      </div>
+      </fieldset>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+      {/* ── Section: Links ── */}
+      <fieldset className="mt-10 space-y-5">
+        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
+          Links
+        </legend>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              LinkedIn URL
+            </label>
+            <input
+              type="url"
+              value={form.linkedin_url}
+              onChange={(e) => handleChange("linkedin_url", e.target.value)}
+              placeholder="https://linkedin.com/in/..."
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
+              Website URL
+            </label>
+            <input
+              type="url"
+              value={form.website_url}
+              onChange={(e) => handleChange("website_url", e.target.value)}
+              placeholder="https://..."
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        {/* Social links */}
         <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            LinkedIn URL
-          </label>
-          <input
-            type="url"
-            value={form.linkedin_url}
-            onChange={(e) => handleChange("linkedin_url", e.target.value)}
-            placeholder="https://linkedin.com/in/..."
-            className={inputClass}
-          />
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-sm font-medium text-ink-secondary">
+              Social Links
+            </label>
+            <button
+              type="button"
+              onClick={addSocialLink}
+              className="text-sm font-medium text-accent hover:text-accent-hover transition-colors"
+            >
+              + Add link
+            </button>
+          </div>
+          <div className="space-y-3">
+            {socialLinks.map((link, i) => (
+              <div key={i} className="flex gap-3">
+                <input
+                  placeholder="Platform"
+                  value={link.platform}
+                  onChange={(e) =>
+                    updateSocialLink(i, "platform", e.target.value)
+                  }
+                  className={`w-1/3 ${inputClass}`}
+                />
+                <input
+                  placeholder="URL"
+                  value={link.url}
+                  onChange={(e) => updateSocialLink(i, "url", e.target.value)}
+                  className={`flex-1 ${inputClass}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSocialLink(i)}
+                  className="px-3 py-2 text-ink-tertiary hover:text-danger transition-colors"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Website URL
-          </label>
-          <input
-            type="url"
-            value={form.website_url}
-            onChange={(e) => handleChange("website_url", e.target.value)}
-            placeholder="https://..."
-            className={inputClass}
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-          Address
-        </label>
-        <input
-          value={form.address}
-          onChange={(e) => handleChange("address", e.target.value)}
-          className={inputClass}
-        />
-      </div>
-
-      {/* Social Links */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <label className="block text-sm font-medium text-ink-secondary">
-            Social Links
-          </label>
-          <button
-            type="button"
-            onClick={addSocialLink}
-            className="text-sm font-medium text-accent hover:text-accent-hover transition-colors"
-          >
-            + Add link
-          </button>
-        </div>
-        <div className="space-y-3">
-          {socialLinks.map((link, i) => (
-            <div key={i} className="flex gap-3">
-              <input
-                placeholder="Platform"
-                value={link.platform}
-                onChange={(e) => updateSocialLink(i, "platform", e.target.value)}
-                className={`w-1/3 ${inputClass}`}
-              />
-              <input
-                placeholder="URL"
-                value={link.url}
-                onChange={(e) => updateSocialLink(i, "url", e.target.value)}
-                className={`flex-1 ${inputClass}`}
-              />
-              <button
-                type="button"
-                onClick={() => removeSocialLink(i)}
-                className="px-3 py-2 text-ink-tertiary hover:text-danger transition-colors"
-              >
-                &times;
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+      </fieldset>
 
       {/* Submit */}
-      <div className="flex gap-3 pt-2">
+      <div className="flex gap-3 mt-10 pt-8 border-t">
         <button
           type="submit"
           disabled={saving}
-          className="px-6 py-2.5 bg-accent text-surface-raised font-semibold text-sm rounded-lg hover:bg-accent-hover disabled:opacity-50 transition-colors"
+          className="btn-primary px-6 py-2.5 bg-accent text-surface-raised font-semibold text-sm rounded-lg disabled:opacity-50"
         >
           {saving ? "Saving..." : isEdit ? "Update Employee" : "Create Employee"}
         </button>

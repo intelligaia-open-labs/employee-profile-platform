@@ -10,7 +10,11 @@ import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-export default function EditEmployeePage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditEmployeePage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const { loading: authLoading } = useAuth();
   const [employee, setEmployee] = useState<EmployeePublic | null>(null);
@@ -42,22 +46,33 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
   return (
     <div className="min-h-screen bg-surface">
       <header className="border-b">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center gap-4">
+        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link
+              href="/admin"
+              className="text-sm text-ink-tertiary hover:text-ink transition-colors"
+            >
+              &larr; Back
+            </Link>
+            <span className="text-sm font-semibold text-ink">
+              Edit Employee
+            </span>
+          </div>
           <Link
             href="/admin"
-            className="text-sm text-ink-tertiary hover:text-ink transition-colors"
+            className="text-sm font-bold tracking-tight text-ink-tertiary"
           >
-            &larr; Dashboard
+            Business Profile
           </Link>
-          <h1 className="text-sm font-semibold text-ink">Edit Employee</h1>
         </div>
       </header>
       <main className="py-10 px-6">
         <EmployeeForm employee={employee} />
 
+        {/* QR Code */}
         {employee.qr_code && (
-          <div className="max-w-2xl mx-auto mt-10 pt-8 border-t">
-            <h2 className="text-sm font-semibold tracking-wide uppercase text-ink-tertiary mb-5">
+          <div className="max-w-2xl mx-auto mt-12 pt-8 border-t">
+            <h2 className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
               QR Code
             </h2>
             <div className="flex items-center gap-6">
@@ -70,15 +85,20 @@ export default function EditEmployeePage({ params }: { params: Promise<{ id: str
               />
               <div>
                 <p className="text-sm text-ink-secondary">
-                  Scans: <strong className="font-semibold text-ink tabular-nums">{employee.qr_code.scan_count}</strong>
+                  Scans:{" "}
+                  <strong className="font-semibold text-ink tabular-nums">
+                    {employee.qr_code.scan_count}
+                  </strong>
                 </p>
-                <p className="mt-1 text-sm text-ink-tertiary">
-                  <code className="text-xs bg-accent-subtle px-1.5 py-0.5 rounded">/p/{employee.slug}</code>
+                <p className="mt-1.5 text-sm text-ink-tertiary">
+                  <code className="text-xs bg-accent-subtle px-1.5 py-0.5 rounded">
+                    /p/{employee.slug}
+                  </code>
                 </p>
                 <a
                   href={`${API_URL}${employee.qr_code.qr_url}`}
                   download={`${employee.slug}-qr.png`}
-                  className="mt-4 inline-block px-4 py-2 bg-accent text-surface-raised text-sm font-semibold rounded-lg hover:bg-accent-hover transition-colors"
+                  className="btn-primary mt-4 inline-block px-4 py-2 bg-accent text-surface-raised text-sm font-semibold rounded-lg"
                 >
                   Download QR
                 </a>
