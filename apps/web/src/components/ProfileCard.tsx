@@ -78,14 +78,15 @@ export function ProfileCard({ employee }: Props) {
   });
 
   return (
-    <div className="relative w-full max-w-md mx-auto min-h-screen rounded-[16px] overflow-hidden pb-[60px] pt-[36px] px-[16px]">
-      {/* Background image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        alt=""
-        src="/profile/bg.png"
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-      />
+    <div
+      className="relative w-full max-w-md mx-auto min-h-screen rounded-[16px] overflow-hidden pb-[60px] pt-[36px] px-[16px]"
+      style={{
+        backgroundImage: "url(/profile/bg.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center top",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
 
       {/* Content */}
       <div className="relative flex flex-col gap-[58px] items-start w-full">
