@@ -31,7 +31,7 @@ export function ProfileCard({ employee }: Props) {
   if (employee.linkedin_url) {
     socialItems.push({
       key: "linkedin",
-      icon: "/profile/icon-linkedin.png",
+      icon: "/profile/icon-linkedin.svg",
       label: "LinkedIn",
       subtitle: "Connect with us on LinkedIn",
       href: employee.linkedin_url,
@@ -41,7 +41,7 @@ export function ProfileCard({ employee }: Props) {
   // WhatsApp as social link
   socialItems.push({
     key: "whatsapp",
-    icon: "/profile/icon-whatsapp.png",
+    icon: "/profile/icon-whatsapp.svg",
     label: "WhatsApp",
     subtitle: "Chat with us on WhatsApp",
     href: `https://wa.me/${phoneDigits}`,
@@ -50,7 +50,7 @@ export function ProfileCard({ employee }: Props) {
   telegramLinks.forEach((s) => {
     socialItems.push({
       key: s.id,
-      icon: "/profile/icon-telegram.png",
+      icon: "/profile/icon-telegram.svg",
       label: "Telegram",
       subtitle: "Join our Telegram channel",
       href: s.url,
@@ -60,7 +60,7 @@ export function ProfileCard({ employee }: Props) {
   if (employee.website_url) {
     socialItems.push({
       key: "website",
-      icon: "/profile/icon-website.png",
+      icon: "/profile/icon-website.svg",
       label: "Webpage",
       subtitle: "Visit our company website",
       href: employee.website_url,
@@ -70,7 +70,7 @@ export function ProfileCard({ employee }: Props) {
   otherLinks.forEach((s) => {
     socialItems.push({
       key: s.id,
-      icon: "/profile/icon-website.png",
+      icon: "/profile/icon-website.svg",
       label: s.platform,
       subtitle: `Visit ${s.platform}`,
       href: s.url,
@@ -96,7 +96,7 @@ export function ProfileCard({ employee }: Props) {
           <div className="flex flex-col items-center">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/profile/logo.png"
+              src="/profile/logo.svg"
               alt="Logo"
               className="h-[32px] w-auto"
             />
@@ -151,7 +151,7 @@ export function ProfileCard({ employee }: Props) {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/profile/icon-phone-action.png"
+                  src="/profile/icon-phone-action.svg"
                   alt="Call"
                   className="w-[22px] h-[22px]"
                 />
@@ -163,7 +163,7 @@ export function ProfileCard({ employee }: Props) {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/profile/icon-call.png"
+                  src="/profile/icon-call.svg"
                   alt="Call"
                   className="w-full h-full"
                 />
@@ -175,7 +175,7 @@ export function ProfileCard({ employee }: Props) {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/profile/icon-email.png"
+                  src="/profile/icon-email.svg"
                   alt="Email"
                   className="w-full h-full"
                 />
@@ -189,7 +189,7 @@ export function ProfileCard({ employee }: Props) {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/profile/icon-sms.png"
+                  src="/profile/icon-sms.svg"
                   alt="Message"
                   className="w-full h-full"
                 />
@@ -205,7 +205,7 @@ export function ProfileCard({ employee }: Props) {
               <div className="flex gap-[12px] items-center w-full">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src="/profile/icon-contact-header.png"
+                  src="/profile/icon-contact-header.svg"
                   alt=""
                   className="w-[44px] h-[44px] shrink-0"
                 />
@@ -282,7 +282,7 @@ export function ProfileCard({ employee }: Props) {
                     </div>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src="/profile/icon-chevron.png"
+                      src="/profile/icon-chevron.svg"
                       alt=""
                       className="w-[20px] h-[20px] shrink-0"
                     />
