@@ -44,35 +44,38 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <ProfileReveal>
       <main
-        className="min-h-screen flex items-start justify-center px-4 py-4 md:py-8 lg:py-12"
+        className="min-h-screen"
         style={{
-          background:
-            "linear-gradient(135deg, #3d5a6e 0%, #5a7d8f 30%, #8aa5b5 60%, #c4d4de 100%)",
+          backgroundImage: "url(/profile/bg-mobile.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center top",
+          backgroundRepeat: "no-repeat",
+          backgroundAttachment: "fixed",
         }}
       >
-        {/* Desktop side info */}
-        <div className="hidden lg:flex flex-col justify-center items-end pr-12 pt-32 flex-shrink-0 w-[280px]">
-          <h2 className="text-white/90 text-3xl font-bold leading-tight tracking-tight">
-            {employee.full_name}
-          </h2>
-          <p className="mt-2 text-white/50 text-sm font-medium text-right">
-            {employee.designation}
-          </p>
-          <div className="mt-6 w-12 h-px bg-white/20" />
-          <p className="mt-4 text-white/30 text-xs font-medium tracking-[0.2em] uppercase text-right">
-            Digital Profile
-          </p>
-        </div>
+        <div className="flex items-start justify-center px-0 md:px-4 py-0 md:py-8 lg:py-12">
+          {/* Desktop side info */}
+          <div className="hidden lg:flex flex-col justify-center items-end pr-12 pt-32 flex-shrink-0 w-[280px]">
+            <h2 className="text-white/90 text-3xl font-bold leading-tight tracking-tight">
+              {employee.full_name}
+            </h2>
+            <p className="mt-2 text-white/50 text-sm font-medium text-right">
+              {employee.designation}
+            </p>
+            <div className="mt-6 w-12 h-px bg-white/20" />
+            <p className="mt-4 text-white/30 text-xs font-medium tracking-[0.2em] uppercase text-right">
+              Digital Profile
+            </p>
+          </div>
 
-        {/* Card */}
-        <div className="w-full max-w-md lg:flex-shrink-0">
-          <div className="lg:shadow-2xl lg:rounded-[20px] lg:overflow-hidden">
+          {/* Card */}
+          <div className="w-full max-w-md lg:flex-shrink-0">
             <ProfileCard employee={employee} />
           </div>
-        </div>
 
-        {/* Desktop right spacer */}
-        <div className="hidden lg:block w-[280px] flex-shrink-0" />
+          {/* Desktop right spacer */}
+          <div className="hidden lg:block w-[280px] flex-shrink-0" />
+        </div>
       </main>
     </ProfileReveal>
   );

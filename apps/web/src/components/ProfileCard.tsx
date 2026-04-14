@@ -77,14 +77,7 @@ export function ProfileCard({ employee }: Props) {
 
   return (
     <div
-      className="relative w-full max-w-md mx-auto min-h-screen rounded-[16px] overflow-hidden pb-[60px] pt-[36px] px-[16px]"
-      style={{
-        backgroundImage: "url(/profile/bg-mobile.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center top",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
-      }}
+      className="relative w-full max-w-md mx-auto min-h-screen pb-[60px] pt-[36px] px-[16px]"
     >
       {/* Content */}
       <div className="relative flex flex-col gap-[58px] items-start w-full">
