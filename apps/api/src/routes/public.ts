@@ -81,7 +81,7 @@ publicRouter.get("/qr/:slug", async (req: Request, res: Response, next: NextFunc
   }
 });
 
-// vCard download
+// vCard download — uses inline disposition so mobile opens contact app directly
 publicRouter.get("/vcard/:slug", async (req: Request, res: Response, next: NextFunction) => {
   try {
     const employee = await getEmployeeBySlug(req.params.slug);
@@ -90,18 +90,26 @@ publicRouter.get("/vcard/:slug", async (req: Request, res: Response, next: NextF
       throw new AppError(404, "Profile not found");
     }
 
+    // Fetch phone numbers
+    const phoneNumbers = await prisma.phoneNumber.findMany({
+      where: { employee_id: employee.id },
+      orderBy: { is_primary: "desc" },
+    });
+
     const vcf = generateVCard({
       full_name: employee.full_name,
       designation: employee.designation,
       email: employee.email,
       phone: employee.phone,
+      phone_numbers: phoneNumbers,
       website_url: employee.website_url,
       linkedin_url: employee.linkedin_url,
       address: employee.address,
+      social_links: employee.social_links,
     });
 
-    res.setHeader("Content-Type", "text/vcard; charset=utf-8");
-    res.setHeader("Content-Disposition", `attachment; filename="${employee.slug}.vcf"`);
+    res.setHeader("Content-Type", "text/x-vcard; charset=utf-8");
+    res.setHeader("Content-Disposition", `inline; filename="${employee.slug}.vcf"`);
     res.send(vcf);
   } catch (err) {
     next(err);
