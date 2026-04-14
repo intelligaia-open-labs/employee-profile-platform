@@ -18,6 +18,7 @@ export function ProfileCard({ employee }: Props) {
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [showAllSocial, setShowAllSocial] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [qrOpen, setQrOpen] = useState(false);
 
   // Use phone_numbers if available, fall back to legacy phone field
   const primaryPhone =
@@ -441,15 +442,15 @@ export function ProfileCard({ employee }: Props) {
       {/* Fixed QR + Share FABs — bottom left */}
       <div className="fixed bottom-[20px] left-[20px] z-50 flex gap-[10px]">
         {/* QR Button */}
-        <a
-          href={`${API_URL}/public/vcard/${employee.slug}`}
+        <button
+          onClick={() => setQrOpen(true)}
           className="w-[46px] h-[46px] rounded-full bg-[#121212] text-white shadow-lg flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 14.625v2.25m0 2.25h2.25m2.25 0h-2.25m0 0v-2.25m0 0h2.25" />
           </svg>
-        </a>
+        </button>
 
         {/* Share Button */}
         <div className="relative">
@@ -536,6 +537,55 @@ export function ProfileCard({ employee }: Props) {
           className="w-[34px] h-[34px] shrink-0"
         />
       </button>
+
+      {/* QR Preview Modal */}
+      {qrOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setQrOpen(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-[300px] w-full mx-4 text-center animate-slide-up">
+            <button
+              onClick={() => setQrOpen(false)}
+              className="absolute top-3 right-3 text-[#727272] hover:text-[#121212]"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <p className="text-[16px] font-semibold text-[#121212] mb-1">
+              {employee.full_name}
+            </p>
+            <p className="text-[12px] text-[#727272] mb-4">
+              Scan to view profile
+            </p>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${API_URL}/public/qr/${employee.slug}`}
+              alt="QR Code"
+              className="w-[200px] h-[200px] mx-auto border rounded-xl"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`;
+              }}
+            />
+            <div className="flex gap-2 mt-5">
+              <a
+                href={`${API_URL}/public/vcard/${employee.slug}`}
+                className="flex-1 bg-[#121212] text-white text-[12px] font-medium py-2.5 rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
+              >
+                Save Contact
+              </a>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setQrOpen(false);
+                }}
+                className="flex-1 border border-[#e5e5e5] text-[#121212] text-[12px] font-medium py-2.5 rounded-full text-center hover:bg-[#f5f5f5] transition-colors"
+              >
+                Copy Link
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Meeting Request Dialog */}
       <MeetingDialog

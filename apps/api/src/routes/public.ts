@@ -56,6 +56,31 @@ publicRouter.post("/meeting-request/:slug", async (req: Request, res: Response, 
   }
 });
 
+// QR code image
+publicRouter.get("/qr/:slug", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const employee = await getEmployeeBySlug(req.params.slug);
+    if (!employee.is_active) throw new AppError(404, "Profile not found");
+
+    const qr = await prisma.qRCode.findUnique({ where: { employee_id: employee.id } });
+    if (!qr) throw new AppError(404, "QR code not found");
+
+    const { extractS3Key, getPresignedUrl } = await import("../utils/s3");
+    const s3Key = extractS3Key(qr.qr_url);
+    if (s3Key) {
+      const url = await getPresignedUrl(s3Key);
+      return res.redirect(url);
+    }
+
+    // Local file
+    const path = await import("path");
+    const filePath = path.join(__dirname, "../../", qr.qr_url);
+    res.sendFile(filePath);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // vCard download
 publicRouter.get("/vcard/:slug", async (req: Request, res: Response, next: NextFunction) => {
   try {
