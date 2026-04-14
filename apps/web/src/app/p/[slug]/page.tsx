@@ -63,19 +63,8 @@ export default async function ProfilePage({ params }: Props) {
           }}
         />
         <div className="relative z-10 flex items-start justify-center px-0 md:px-4 py-0 md:py-8 lg:py-12">
-          {/* Desktop side info */}
-          <div className="hidden lg:flex flex-col justify-center items-end pr-12 pt-32 flex-shrink-0 w-[280px]">
-            <h2 className="text-white/90 text-3xl font-bold leading-tight tracking-tight">
-              {employee.full_name}
-            </h2>
-            <p className="mt-2 text-white/50 text-sm font-medium text-right">
-              {employee.designation}
-            </p>
-            <div className="mt-6 w-12 h-px bg-white/20" />
-            <p className="mt-4 text-white/30 text-xs font-medium tracking-[0.2em] uppercase text-right">
-              Digital Profile
-            </p>
-          </div>
+          {/* Desktop left spacer */}
+          <div className="hidden lg:block w-[280px] flex-shrink-0" />
 
           {/* Card */}
           <div className="w-full max-w-md lg:flex-shrink-0">
