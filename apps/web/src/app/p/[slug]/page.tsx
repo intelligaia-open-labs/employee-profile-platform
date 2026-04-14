@@ -44,7 +44,7 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <ProfileReveal>
       <main className="relative min-h-screen">
-        {/* Fixed background — mobile version (tall) */}
+        {/* Fixed background — mobile */}
         <div
           className="fixed inset-0 z-0 md:hidden"
           style={{
@@ -53,26 +53,21 @@ export default async function ProfilePage({ params }: Props) {
             backgroundPosition: "center top",
           }}
         />
-        {/* Fixed background — desktop version (wide) */}
+        {/* Fixed background — desktop */}
         <div
           className="fixed inset-0 z-0 hidden md:block"
           style={{
-            backgroundImage: "url(/profile/bg.png)",
+            backgroundImage: "url(/profile/bg-desktop.png)",
             backgroundSize: "cover",
             backgroundPosition: "center center",
           }}
         />
-        <div className="relative z-10 flex items-start justify-center px-0 md:px-4 py-0 md:py-8 lg:py-12">
-          {/* Desktop left spacer */}
-          <div className="hidden lg:block w-[280px] flex-shrink-0" />
 
-          {/* Card */}
-          <div className="w-full max-w-md lg:flex-shrink-0">
+        {/* Centered card — same layout for mobile and desktop */}
+        <div className="relative z-10 flex justify-center">
+          <div className="w-full max-w-[560px]">
             <ProfileCard employee={employee} />
           </div>
-
-          {/* Desktop right spacer */}
-          <div className="hidden lg:block w-[280px] flex-shrink-0" />
         </div>
       </main>
     </ProfileReveal>
