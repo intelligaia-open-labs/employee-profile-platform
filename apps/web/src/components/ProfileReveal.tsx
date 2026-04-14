@@ -14,8 +14,6 @@ const STAGES = [
   { label: "Ready", color: "#22c55e", dash: 176, duration: 400 },
 ] as const;
 
-const TOTAL_ARC = 176;
-
 export function ProfileReveal({ children }: Props) {
   const [stage, setStage] = useState(0);
   const [done, setDone] = useState(false);
@@ -41,8 +39,6 @@ export function ProfileReveal({ children }: Props) {
   if (showContent) {
     return <div className="animate-content-enter">{children}</div>;
   }
-
-  const current = STAGES[Math.min(stage, STAGES.length - 1)];
 
   return (
     <div className="min-h-screen bg-[#fbfbfb] flex flex-col items-center justify-center px-8">
@@ -81,66 +77,8 @@ export function ProfileReveal({ children }: Props) {
         </p>
       </div>
 
-      {/* Progress ring */}
-      <div className="relative w-14 h-14 mb-5">
-        <svg className="w-14 h-14" viewBox="0 0 56 56" fill="none">
-          {/* Track */}
-          <circle
-            cx="28"
-            cy="28"
-            r="24"
-            stroke="#e5e5e5"
-            strokeWidth="3"
-          />
-          {/* Progress arc */}
-          <circle
-            cx="28"
-            cy="28"
-            r="24"
-            strokeWidth="3"
-            strokeLinecap="round"
-            style={{
-              stroke: current.color,
-              strokeDasharray: `${current.dash} ${TOTAL_ARC + 30}`,
-              transform: "rotate(-90deg)",
-              transformOrigin: "center",
-              transition:
-                "stroke 0.4s ease, stroke-dasharray 0.5s cubic-bezier(0.4,0,0.2,1)",
-            }}
-          />
-        </svg>
-
-        {/* Success checkmark */}
-        {done && (
-          <svg
-            className="absolute inset-0 w-14 h-14 animate-check-pop"
-            viewBox="0 0 56 56"
-            fill="none"
-          >
-            <path
-              d="M19 29 L25 35 L37 23"
-              stroke="#22c55e"
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeDasharray="30"
-              strokeDashoffset="30"
-              className="animate-check-draw"
-            />
-          </svg>
-        )}
-      </div>
-
-      {/* Stage label */}
-      <p
-        className="text-[11px] font-medium tracking-[0.15em] uppercase transition-all duration-300"
-        style={{ color: done ? "#22c55e" : "#a0a0a0" }}
-      >
-        {done ? "Connected" : current.label}
-      </p>
-
       {/* Stage dots */}
-      <div className="flex gap-2 mt-4">
+      <div className="flex gap-2">
         {STAGES.map((s, i) => (
           <div
             key={i}
@@ -161,20 +99,7 @@ export function ProfileReveal({ children }: Props) {
         .animate-building-float {
           animation: building-float 3s ease-in-out infinite;
         }
-        @keyframes check-draw {
-          to { stroke-dashoffset: 0; }
-        }
-        .animate-check-draw {
-          animation: check-draw 0.4s cubic-bezier(0.65, 0, 0.35, 1) 0.15s forwards;
-        }
-        @keyframes check-pop {
-          from { opacity: 0; transform: scale(0.8); }
-          to { opacity: 1; transform: scale(1); }
-        }
-        .animate-check-pop {
-          animation: check-pop 0.3s ease-out forwards;
-        }
-        @keyframes content-enter {
+@keyframes content-enter {
           from { opacity: 0; }
           to { opacity: 1; }
         }
