@@ -343,15 +343,15 @@ export function ProfileCard({ employee }: Props) {
               </div>
             </div>
 
-            {/* ── Company Info Card ── */}
+            {/* ── Company Info Card (fixed content) ── */}
             <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px] relative overflow-visible">
               {/* Header */}
               <div className="flex flex-col gap-[10px] items-start text-center w-full">
                 <p className="text-[20px] font-semibold text-[#121212] leading-[normal] w-full">
-                  {employee.full_name}
+                  Intelligaia Technologies Pvt. Ltd.
                 </p>
                 <p className="text-[12px] font-normal text-[#727272] leading-[14px] w-full">
-                  {employee.designation}
+                  AI-Centered Design &amp; Engineering
                 </p>
               </div>
 
@@ -359,49 +359,46 @@ export function ProfileCard({ employee }: Props) {
               <div className="w-full h-px bg-[#e5e5e5]" />
 
               {/* Address */}
-              {employee.address && (
-                <div className="flex gap-[12px] items-start w-full">
-                  <p className="flex-1 text-[12px] font-normal text-[#727272] leading-[14px]">
-                    Address
+              <div className="flex gap-[12px] items-start w-full">
+                <p className="flex-1 text-[12px] font-normal text-[#727272] leading-[14px]">
+                  Address
+                </p>
+                <div className="flex flex-col gap-[12px] items-end">
+                  <p className="text-[12px] font-medium text-[#727272] leading-[normal] text-right">
+                    Plot I-63,<br />
+                    Sector 83, Alpha I.T. City,<br />
+                    Mohali, Punjab - 140306<br />
+                    India
                   </p>
-                  <div className="flex flex-col gap-[12px] items-end">
-                    <p className="text-[12px] font-medium text-[#727272] leading-[normal] text-right max-w-[60%]">
-                      {employee.address}
-                    </p>
-                    {/* Get directions button */}
-                    <a
-                      href={`https://maps.google.com/?q=${encodeURIComponent(employee.address)}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex gap-[10.732px] items-center justify-center bg-[#121212] text-white text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src="/profile/icon-location.svg"
-                        alt=""
-                        className="w-[12px] h-[12px] rotate-180 -scale-y-100 invert"
-                      />
-                      Get directions
-                    </a>
-                  </div>
-                </div>
-              )}
-
-              {/* Website */}
-              {employee.website_url && (
-                <div className="flex gap-[12px] items-start text-[12px] text-[#727272] w-full">
-                  <p className="flex-1 font-normal leading-[14px]">Website</p>
                   <a
-                    href={employee.website_url}
+                    href="https://maps.google.com/?q=Plot+I-63+Sector+83+Alpha+IT+City+Mohali+Punjab+140306+India"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium leading-[14px] text-right max-w-[60%] hover:underline"
+                    className="inline-flex gap-[10.732px] items-center justify-center bg-[#121212] text-white text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors"
                   >
-                    {employee.website_url.replace(/^https?:\/\//, "")}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src="/profile/icon-location.svg"
+                      alt=""
+                      className="w-[12px] h-[12px] rotate-180 -scale-y-100 invert"
+                    />
+                    Get directions
                   </a>
                 </div>
-              )}
+              </div>
 
+              {/* Website */}
+              <div className="flex gap-[12px] items-start text-[12px] text-[#727272] w-full">
+                <p className="flex-1 font-normal leading-[14px]">Website</p>
+                <a
+                  href="https://www.intelligaia.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium leading-[14px] text-right hover:underline"
+                >
+                  www.intelligaia.com
+                </a>
+              </div>
             </div>
 
             {/* Save Contact — full width below cards */}
