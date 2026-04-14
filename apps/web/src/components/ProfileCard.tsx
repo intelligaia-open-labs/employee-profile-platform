@@ -28,68 +28,63 @@ export function ProfileCard({ employee }: Props) {
       ? employee.phone_numbers
       : [{ country_code: "", number: employee.phone, label: null, is_primary: true, id: "legacy" }];
 
-  const telegramLinks = employee.social_links.filter(
-    (s) => s.platform.toLowerCase() === "telegram",
-  );
-  const otherLinks = employee.social_links.filter(
-    (s) => s.platform.toLowerCase() !== "telegram",
-  );
+  // Platform icon and subtitle mapping
+  const platformMeta: Record<string, { icon: string; subtitle: string }> = {
+    linkedin: { icon: "/profile/icon-linkedin.svg", subtitle: "Connect with us on LinkedIn" },
+    whatsapp: { icon: "/profile/icon-whatsapp.svg", subtitle: "Chat with us on WhatsApp" },
+    telegram: { icon: "/profile/icon-telegram.svg", subtitle: "Join our Telegram channel" },
+    website: { icon: "/profile/icon-website.svg", subtitle: "Visit our company website" },
+    webpage: { icon: "/profile/icon-website.svg", subtitle: "Visit our company website" },
+    instagram: { icon: "/profile/icon-website.svg", subtitle: "Follow us on Instagram" },
+    "x (twitter)": { icon: "/profile/icon-website.svg", subtitle: "Follow us on X" },
+    twitter: { icon: "/profile/icon-website.svg", subtitle: "Follow us on X" },
+    youtube: { icon: "/profile/icon-website.svg", subtitle: "Watch us on YouTube" },
+    facebook: { icon: "/profile/icon-website.svg", subtitle: "Follow us on Facebook" },
+    github: { icon: "/profile/icon-website.svg", subtitle: "View our code on GitHub" },
+  };
 
-  const socialItems: {
-    key: string;
-    icon: string;
-    label: string;
-    subtitle: string;
-    href: string;
-  }[] = [];
+  function resolveHref(platform: string, url: string): string {
+    const key = platform.toLowerCase();
+    if (key === "whatsapp") {
+      const digits = url.replace(/[^0-9]/g, "");
+      return `https://wa.me/${digits}`;
+    }
+    if (url.startsWith("http")) return url;
+    return `https://${url}`;
+  }
+
+  // Build social items from dedicated fields + social_links
+  const socialItems: { key: string; icon: string; label: string; subtitle: string; href: string }[] = [];
 
   if (employee.linkedin_url) {
     socialItems.push({
       key: "linkedin",
-      icon: "/profile/icon-linkedin.svg",
+      ...platformMeta.linkedin,
       label: "LinkedIn",
-      subtitle: "Connect with us on LinkedIn",
       href: employee.linkedin_url,
     });
   }
 
-  socialItems.push({
-    key: "whatsapp",
-    icon: "/profile/icon-whatsapp.svg",
-    label: "WhatsApp",
-    subtitle: "Chat with us on WhatsApp",
-    href: `https://wa.me/${phoneDigits}`,
-  });
-
-  telegramLinks.forEach((s) => {
+  employee.social_links.forEach((s) => {
+    const key = s.platform.toLowerCase();
+    const meta = platformMeta[key] ?? { icon: "/profile/icon-website.svg", subtitle: `Visit ${s.platform}` };
     socialItems.push({
       key: s.id,
-      icon: "/profile/icon-telegram.svg",
-      label: "Telegram",
-      subtitle: "Join our Telegram channel",
-      href: s.url,
+      icon: meta.icon,
+      label: s.platform,
+      subtitle: meta.subtitle,
+      href: resolveHref(s.platform, s.url),
     });
   });
 
   if (employee.website_url) {
     socialItems.push({
       key: "website",
-      icon: "/profile/icon-website.svg",
+      ...platformMeta.website,
       label: "Webpage",
-      subtitle: "Visit our company website",
       href: employee.website_url,
     });
   }
-
-  otherLinks.forEach((s) => {
-    socialItems.push({
-      key: s.id,
-      icon: "/profile/icon-website.svg",
-      label: s.platform,
-      subtitle: `Visit ${s.platform}`,
-      href: s.url,
-    });
-  });
 
   return (
     <div

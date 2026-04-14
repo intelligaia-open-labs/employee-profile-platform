@@ -24,6 +24,18 @@ interface SocialLinkInput {
   url: string;
 }
 
+const SOCIAL_PLATFORMS = [
+  { key: "linkedin", label: "LinkedIn", icon: "/profile/icon-linkedin.svg", placeholder: "https://linkedin.com/in/username", type: "url" },
+  { key: "whatsapp", label: "WhatsApp", icon: "/profile/icon-whatsapp.svg", placeholder: "WhatsApp number with country code (e.g. +919058140003)", type: "tel" },
+  { key: "telegram", label: "Telegram", icon: "/profile/icon-telegram.svg", placeholder: "https://t.me/username", type: "url" },
+  { key: "website", label: "Website", icon: "/profile/icon-website.svg", placeholder: "https://www.example.com", type: "url" },
+  { key: "twitter", label: "X (Twitter)", icon: "/profile/icon-website.svg", placeholder: "https://x.com/username", type: "url" },
+  { key: "instagram", label: "Instagram", icon: "/profile/icon-website.svg", placeholder: "https://instagram.com/username", type: "url" },
+  { key: "youtube", label: "YouTube", icon: "/profile/icon-website.svg", placeholder: "https://youtube.com/@channel", type: "url" },
+  { key: "facebook", label: "Facebook", icon: "/profile/icon-website.svg", placeholder: "https://facebook.com/page", type: "url" },
+  { key: "github", label: "GitHub", icon: "/profile/icon-website.svg", placeholder: "https://github.com/username", type: "url" },
+] as const;
+
 interface PhoneNumberInput {
   country_code: string;
   number: string;
@@ -46,12 +58,23 @@ export function EmployeeForm({ employee }: Props) {
     address: employee?.address ?? "",
   });
 
-  const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>(
-    employee?.social_links?.map((s) => ({
-      platform: s.platform,
-      url: s.url,
-    })) ?? [],
+  // Build initial social profiles from existing data
+  function buildInitialProfiles(): Record<string, string> {
+    const profiles: Record<string, string> = {};
+    if (employee?.linkedin_url) profiles.linkedin = employee.linkedin_url;
+    if (employee?.website_url) profiles.website = employee.website_url;
+    employee?.social_links?.forEach((s) => {
+      const key = s.platform.toLowerCase();
+      profiles[key] = s.url;
+    });
+    return profiles;
+  }
+
+  const [socialProfiles, setSocialProfiles] = useState<Record<string, string>>(
+    buildInitialProfiles,
   );
+
+  const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>([]);
 
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberInput[]>(
     employee?.phone_numbers?.map((p) => ({
@@ -138,13 +161,26 @@ export function EmployeeForm({ employee }: Props) {
 
     try {
       const fd = new FormData();
-      Object.entries(form).forEach(([key, val]) => {
+
+      // Set linkedin_url and website_url from social profiles
+      const formWithProfiles = {
+        ...form,
+        linkedin_url: socialProfiles.linkedin || "",
+        website_url: socialProfiles.website || "",
+      };
+      Object.entries(formWithProfiles).forEach(([key, val]) => {
         if (val) fd.append(key, val);
       });
 
-      const validLinks = socialLinks.filter((s) => s.platform && s.url);
-      if (validLinks.length > 0) {
-        fd.append("social_links", JSON.stringify(validLinks));
+      // Convert social profiles to social_links (exclude linkedin/website — they have dedicated fields)
+      const socialLinksFromProfiles = Object.entries(socialProfiles)
+        .filter(([key, url]) => url && key !== "linkedin" && key !== "website")
+        .map(([key, url]) => {
+          const platform = SOCIAL_PLATFORMS.find((p) => p.key === key);
+          return { platform: platform?.label ?? key, url };
+        });
+      if (socialLinksFromProfiles.length > 0) {
+        fd.append("social_links", JSON.stringify(socialLinksFromProfiles));
       }
 
       const validPhones = phoneNumbers.filter((p) => p.number);
@@ -384,87 +420,60 @@ export function EmployeeForm({ employee }: Props) {
         </CardContent>
       </Card>
 
-      {/* Links Section */}
+      {/* Social Profiles Section */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Links</CardTitle>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={addSocialLink}
-              className="text-primary"
-            >
-              <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              Add Social Link
-            </Button>
-          </div>
+          <CardTitle className="text-base">Social Profiles</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Add your social links — only filled profiles will appear on the card
+          </p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="linkedin_url">LinkedIn URL</Label>
-              <Input
-                id="linkedin_url"
-                type="url"
-                value={form.linkedin_url}
-                onChange={(e) => handleChange("linkedin_url", e.target.value)}
-                placeholder="https://linkedin.com/in/..."
+        <CardContent className="space-y-3">
+          {SOCIAL_PLATFORMS.map((platform) => (
+            <div key={platform.key} className="flex items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={platform.icon}
+                alt=""
+                className="w-8 h-8 shrink-0 rounded-lg"
               />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="website_url">Website URL</Label>
-              <Input
-                id="website_url"
-                type="url"
-                value={form.website_url}
-                onChange={(e) => handleChange("website_url", e.target.value)}
-                placeholder="https://..."
-              />
-            </div>
-          </div>
-
-          {socialLinks.length > 0 && (
-            <>
-              <Separator />
-              <div className="space-y-3">
-                {socialLinks.map((link, i) => (
-                  <div key={i} className="flex gap-3">
-                    <Input
-                      placeholder="Platform"
-                      value={link.platform}
-                      onChange={(e) =>
-                        updateSocialLink(i, "platform", e.target.value)
-                      }
-                      className="w-1/3"
-                    />
-                    <Input
-                      placeholder="URL"
-                      value={link.url}
-                      onChange={(e) =>
-                        updateSocialLink(i, "url", e.target.value)
-                      }
-                      className="flex-1"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => removeSocialLink(i)}
-                      className="text-muted-foreground hover:text-destructive shrink-0"
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </Button>
-                  </div>
-                ))}
+              <div className="flex-1 min-w-0">
+                <Label className="text-xs text-muted-foreground mb-1 block">
+                  {platform.label}
+                </Label>
+                <Input
+                  type={platform.type === "tel" ? "text" : "url"}
+                  value={socialProfiles[platform.key] ?? ""}
+                  onChange={(e) =>
+                    setSocialProfiles((prev) => ({
+                      ...prev,
+                      [platform.key]: e.target.value,
+                    }))
+                  }
+                  placeholder={platform.placeholder}
+                />
               </div>
-            </>
-          )}
+              {socialProfiles[platform.key] && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() =>
+                    setSocialProfiles((prev) => {
+                      const next = { ...prev };
+                      delete next[platform.key];
+                      return next;
+                    })
+                  }
+                  className="text-muted-foreground hover:text-destructive shrink-0 mt-5"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </Button>
+              )}
+            </div>
+          ))}
         </CardContent>
       </Card>
 
