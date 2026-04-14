@@ -47,9 +47,15 @@ function parseUserAgent(ua: string): { device_type: string; browser: string; os:
 function detectSource(req: Request): string {
   const ref = req.get("referer") || req.get("referrer") || "";
   const query = req.query;
+  const body = req.body || {};
 
+  // Check body first (sent from client-side tracker)
+  if (body.source && body.source !== "direct") return String(body.source);
+  if (body.utm_source) return String(body.utm_source);
+
+  // Then query params
   if (query.utm_source) return String(query.utm_source);
-  if (query.source === "qr") return "qr";
+  if (query.source && query.source !== "direct") return String(query.source);
   if (!ref) return "direct";
 
   const refLower = ref.toLowerCase();

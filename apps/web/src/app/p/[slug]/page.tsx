@@ -3,6 +3,7 @@ import { apiFetch } from "@/lib/api";
 import type { ApiResponse, EmployeePublic } from "@business-profile/shared";
 import { ProfileCard } from "@/components/ProfileCard";
 import { ProfileReveal } from "@/components/ProfileReveal";
+import { ProfileTracker } from "@/components/ProfileTracker";
 import type { Metadata } from "next";
 
 interface Props {
@@ -43,6 +44,7 @@ export default async function ProfilePage({ params }: Props) {
 
   return (
     <ProfileReveal>
+      <ProfileTracker slug={slug} />
       <main className="relative min-h-screen">
         {/* Fixed background — mobile */}
         <div

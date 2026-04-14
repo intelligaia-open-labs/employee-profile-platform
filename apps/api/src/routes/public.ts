@@ -16,13 +16,27 @@ publicRouter.get("/profile/:slug", async (req: Request, res: Response, next: Nex
       throw new AppError(404, "Profile not found");
     }
 
-    // Track analytics and increment scan count in the background
-    trackProfileView(employee.id, req).catch(() => {});
+    // Increment scan count in the background
     incrementScanCount(req.params.slug).catch(() => {});
 
     res.json({ success: true, data: await resolveEmployeeUrls(employee) });
   } catch (err) {
     next(err);
+  }
+});
+
+// Track profile view — called from the browser so we get real user-agent, IP, and source param
+publicRouter.post("/track/:slug", async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const employee = await getEmployeeBySlug(req.params.slug);
+    if (!employee.is_active) {
+      res.status(404).json({ success: false });
+      return;
+    }
+    trackProfileView(employee.id, req).catch(() => {});
+    res.json({ success: true });
+  } catch {
+    res.json({ success: true }); // never fail analytics
   }
 });
 
