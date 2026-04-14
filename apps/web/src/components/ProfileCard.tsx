@@ -380,7 +380,7 @@ export function ProfileCard({ employee }: Props) {
                     <img
                       src="/profile/icon-location.svg"
                       alt=""
-                      className="w-[12px] h-[12px] rotate-180 -scale-y-100 invert"
+                      className="w-[12px] h-[12px] rotate-180 -scale-y-100 brightness-0 invert"
                     />
                     Get directions
                   </a>
