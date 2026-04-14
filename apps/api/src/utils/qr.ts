@@ -4,7 +4,7 @@ import { env, useS3 } from "../config/env";
 import { uploadToS3 } from "./s3";
 
 export async function generateQRCode(slug: string): Promise<string> {
-  const profileUrl = `${env.PUBLIC_URL}/p/${slug}`;
+  const profileUrl = `${env.PUBLIC_URL}/p/${slug}?source=qr`;
   const filename = `${slug}.png`;
 
   const buffer = await QRCode.toBuffer(profileUrl, {

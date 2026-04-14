@@ -9,6 +9,13 @@ import { resolveImageUrl } from "@/lib/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
+function shareUrl(source: string): string {
+  if (typeof window === "undefined") return "";
+  const url = new URL(window.location.href);
+  url.searchParams.set("source", source);
+  return url.toString();
+}
+
 interface Props {
   employee: EmployeePublic;
 }
@@ -507,7 +514,7 @@ export function ProfileCard({ employee }: Props) {
               </p>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
+                  navigator.clipboard.writeText(shareUrl("shared"));
                   toast.success("Link copied to clipboard");
                   setShareOpen(false);
                 }}
@@ -519,7 +526,7 @@ export function ProfileCard({ employee }: Props) {
                 <span className="text-[13px] font-medium text-[#121212]">Copy Link</span>
               </button>
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(employee.full_name + " - " + window.location.href)}`}
+                href={`https://wa.me/?text=${encodeURIComponent(employee.full_name + " - " + shareUrl("whatsapp"))}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
                 onClick={() => setShareOpen(false)}
@@ -529,7 +536,7 @@ export function ProfileCard({ employee }: Props) {
                 <span className="text-[13px] font-medium text-[#121212]">WhatsApp</span>
               </a>
               <a
-                href={`mailto:?subject=${encodeURIComponent(employee.full_name + "'s Profile")}&body=${encodeURIComponent(window.location.href)}`}
+                href={`mailto:?subject=${encodeURIComponent(employee.full_name + "'s Profile")}&body=${encodeURIComponent(shareUrl("email"))}`}
                 className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
                 onClick={() => setShareOpen(false)}
               >
@@ -539,7 +546,7 @@ export function ProfileCard({ employee }: Props) {
                 <span className="text-[13px] font-medium text-[#121212]">Email</span>
               </a>
               <a
-                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl("linkedin"))}`}
                 target="_blank" rel="noopener noreferrer"
                 className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
                 onClick={() => setShareOpen(false)}
@@ -628,7 +635,7 @@ export function ProfileCard({ employee }: Props) {
               </button>
               <button
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
+                  navigator.clipboard.writeText(shareUrl("shared"));
                   setQrOpen(false);
                 }}
                 className="flex-1 border border-[#e5e5e5] text-[#121212] text-[12px] font-medium py-2.5 rounded-full text-center hover:bg-[#f5f5f5] transition-colors"
