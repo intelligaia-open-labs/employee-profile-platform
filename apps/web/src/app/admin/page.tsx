@@ -879,96 +879,155 @@ export default function AdminDashboard() {
         {activeTab === "analytics" && (
           <>
             {analyticsLoading ? (
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
-                {[1,2,3,4,5].map(i => <Card key={i}><CardContent className="py-6"><Skeleton className="h-8 w-16 mb-2" /><Skeleton className="h-4 w-24" /></CardContent></Card>)}
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  {[1,2,3,4].map(i => <Card key={i}><CardContent className="py-5"><Skeleton className="h-7 w-14 mb-1.5" /><Skeleton className="h-3.5 w-20" /></CardContent></Card>)}
+                </div>
+                <Card><CardContent className="py-12"><Skeleton className="h-[120px] w-full" /></CardContent></Card>
               </div>
             ) : analytics ? (
-              <div className="space-y-6">
-                {/* Overview Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-                  <Card>
-                    <CardContent className="pt-5 pb-4">
-                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.totalViews}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total Views</p>
+              <div className="space-y-5">
+                {/* Header row */}
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-muted-foreground">Profile views across all employees</p>
+                  <Button variant="outline" size="sm" onClick={fetchAnalytics} disabled={analyticsLoading} className="h-8 text-xs">
+                    <svg className={`w-3.5 h-3.5 mr-1.5 ${analyticsLoading ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
+                    Refresh
+                  </Button>
+                </div>
+
+                {/* Stat row */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {[
+                    { label: "Total Views", value: analytics.overview.totalViews, color: "" },
+                    { label: "Today", value: analytics.overview.todayViews, color: "text-green-600" },
+                    { label: "Last 7 Days", value: analytics.overview.weekViews, color: "" },
+                    { label: "Unique Visitors", value: analytics.overview.uniqueVisitors, color: "text-blue-600" },
+                  ].map((s) => (
+                    <Card key={s.label}>
+                      <CardContent className="pt-4 pb-3.5">
+                        <p className={`text-2xl font-bold tabular-nums ${s.color}`}>{s.value.toLocaleString()}</p>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">{s.label}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Chart + Top sources side by side */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Daily chart — 2/3 width */}
+                  <Card className="lg:col-span-2">
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Views — Last 30 Days</CardTitle>
+                        <span className="text-xs text-muted-foreground tabular-nums">{analytics.overview.monthViews} total</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-4">
+                      <div className="flex items-end gap-[3px] h-[130px] mt-2">
+                        {(() => {
+                          const max = Math.max(...analytics.daily.map(d => d.count), 1);
+                          return analytics.daily.map((d, i) => {
+                            const isToday = i === analytics.daily.length - 1;
+                            return (
+                              <div
+                                key={d.date}
+                                className={`flex-1 rounded-t transition-all duration-150 group relative cursor-default ${isToday ? "bg-foreground" : "bg-foreground/20 hover:bg-foreground/40"}`}
+                                style={{ height: `${Math.max((d.count / max) * 100, 3)}%` }}
+                              >
+                                <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg z-10">
+                                  <span className="font-semibold">{d.count}</span>
+                                  <span className="text-background/60 ml-1">{new Date(d.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                                </div>
+                              </div>
+                            );
+                          });
+                        })()}
+                      </div>
+                      <div className="flex justify-between mt-2 text-[10px] text-muted-foreground/60">
+                        <span>{new Date(analytics.daily[0]?.date).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}</span>
+                        <span>Today</span>
+                      </div>
                     </CardContent>
                   </Card>
+
+                  {/* Traffic sources — 1/3 width */}
                   <Card>
-                    <CardContent className="pt-5 pb-4">
-                      <p className="text-3xl font-bold tabular-nums text-green-600">{analytics.overview.todayViews}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Today</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-5 pb-4">
-                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.weekViews}</p>
-                      <p className="text-xs text-muted-foreground mt-1">This Week</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-5 pb-4">
-                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.monthViews}</p>
-                      <p className="text-xs text-muted-foreground mt-1">This Month</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="pt-5 pb-4">
-                      <p className="text-3xl font-bold tabular-nums text-blue-600">{analytics.overview.uniqueVisitors}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Unique Visitors</p>
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Traffic Sources</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-4">
+                      {analytics.sources.length === 0 ? (
+                        <p className="text-sm text-muted-foreground py-4">No data yet</p>
+                      ) : (() => {
+                        const total = analytics.sources.reduce((s, x) => s + x.count, 0);
+                        const SOURCE_COLORS: Record<string, string> = {
+                          qr: "bg-purple-500", linkedin: "bg-blue-600", whatsapp: "bg-green-500",
+                          direct: "bg-gray-400", shared: "bg-amber-500", email: "bg-red-400",
+                          google: "bg-blue-400", facebook: "bg-blue-700", twitter: "bg-sky-500",
+                          instagram: "bg-pink-500", telegram: "bg-cyan-500", referral: "bg-orange-400",
+                        };
+                        return (
+                          <div className="space-y-3 mt-2">
+                            {/* Stacked bar */}
+                            <div className="flex h-2.5 rounded-full overflow-hidden bg-muted">
+                              {analytics.sources.map((s) => (
+                                <div
+                                  key={s.source}
+                                  className={`${SOURCE_COLORS[s.source] || "bg-gray-300"} transition-all`}
+                                  style={{ width: `${(s.count / total) * 100}%` }}
+                                  title={`${s.source}: ${s.count}`}
+                                />
+                              ))}
+                            </div>
+                            {/* Legend */}
+                            <div className="space-y-2">
+                              {analytics.sources.map((s) => {
+                                const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+                                return (
+                                  <div key={s.source} className="flex items-center justify-between text-sm">
+                                    <div className="flex items-center gap-2">
+                                      <div className={`w-2 h-2 rounded-full shrink-0 ${SOURCE_COLORS[s.source] || "bg-gray-300"}`} />
+                                      <span className="capitalize text-[13px]">{s.source}</span>
+                                    </div>
+                                    <span className="text-[13px] tabular-nums text-muted-foreground">{s.count} <span className="text-[11px]">({pct}%)</span></span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                 </div>
 
-                {/* Daily Views Sparkline */}
-                {analytics.daily.length > 0 && (
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Daily Views (Last 30 Days)</CardTitle></CardHeader>
-                    <CardContent>
-                      <div className="flex items-end gap-[2px] h-[100px]">
-                        {(() => {
-                          const max = Math.max(...analytics.daily.map(d => d.count), 1);
-                          return analytics.daily.map((d) => (
-                            <div
-                              key={d.date}
-                              className="flex-1 bg-foreground/80 rounded-t-sm hover:bg-foreground transition-colors group relative"
-                              style={{ height: `${Math.max((d.count / max) * 100, 2)}%` }}
-                              title={`${d.date}: ${d.count} views`}
-                            >
-                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                                {d.count}
-                              </div>
-                            </div>
-                          ));
-                        })()}
-                      </div>
-                      <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
-                        <span>{analytics.daily[0]?.date}</span>
-                        <span>{analytics.daily[analytics.daily.length - 1]?.date}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Breakdowns Grid */}
+                {/* Bottom row: Top Profiles + Device/Browser */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {/* Views by Employee */}
-                  <Card className="sm:col-span-2 lg:col-span-1">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Top Profiles</CardTitle></CardHeader>
-                    <CardContent>
+                  {/* Top Profiles */}
+                  <Card>
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Top Profiles</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-4">
                       {analytics.byEmployee.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No data yet</p>
+                        <p className="text-sm text-muted-foreground py-4">No data yet</p>
                       ) : (
-                        <div className="space-y-3">
-                          {analytics.byEmployee.slice(0, 8).map((item) => {
+                        <div className="space-y-3 mt-1">
+                          {analytics.byEmployee.slice(0, 6).map((item, i) => {
                             const max = analytics.byEmployee[0]?.views || 1;
                             return (
                               <div key={item.employee.slug} className="flex items-center gap-3">
+                                <span className="text-[11px] font-medium text-muted-foreground/50 w-4 tabular-nums">{i + 1}</span>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium truncate">{item.employee.full_name}</p>
-                                  <div className="mt-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                                    <div className="h-full bg-foreground rounded-full" style={{ width: `${(item.views / max) * 100}%` }} />
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="text-[13px] font-medium truncate">{item.employee.full_name}</p>
+                                    <span className="text-[13px] font-semibold tabular-nums shrink-0 ml-2">{item.views}</span>
+                                  </div>
+                                  <div className="h-1 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full bg-foreground/70 rounded-full transition-all" style={{ width: `${(item.views / max) * 100}%` }} />
                                   </div>
                                 </div>
-                                <span className="text-sm font-semibold tabular-nums shrink-0">{item.views}</span>
                               </div>
                             );
                           })}
@@ -977,164 +1036,111 @@ export default function AdminDashboard() {
                     </CardContent>
                   </Card>
 
-                  {/* Device Breakdown */}
+                  {/* Devices + OS combined */}
                   <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Devices</CardTitle></CardHeader>
-                    <CardContent>
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Devices</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-4">
                       {analytics.devices.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No data yet</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {analytics.devices.map((d) => {
-                            const total = analytics.devices.reduce((s, x) => s + x.count, 0);
-                            const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
-                            return (
-                              <div key={d.device} className="flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-2">
-                                  <span className="capitalize">{d.device}</span>
+                        <p className="text-sm text-muted-foreground py-4">No data yet</p>
+                      ) : (() => {
+                        const total = analytics.devices.reduce((s, x) => s + x.count, 0);
+                        const DEVICE_ICONS: Record<string, string> = { mobile: "📱", tablet: "📟", desktop: "💻" };
+                        return (
+                          <div className="space-y-3 mt-1">
+                            {analytics.devices.map((d) => {
+                              const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+                              return (
+                                <div key={d.device}>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-[13px] capitalize">{DEVICE_ICONS[d.device] || ""} {d.device}</span>
+                                    <span className="text-[13px] tabular-nums text-muted-foreground">{pct}%</span>
+                                  </div>
+                                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full bg-foreground/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-muted-foreground">{pct}%</span>
-                                  <span className="font-semibold tabular-nums w-8 text-right">{d.count}</span>
+                              );
+                            })}
+                            {/* OS sub-list */}
+                            <div className="border-t pt-3 mt-3 space-y-1.5">
+                              <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mb-2">Operating Systems</p>
+                              {analytics.os.slice(0, 4).map((o) => (
+                                <div key={o.os} className="flex items-center justify-between text-[13px]">
+                                  <span>{o.os}</span>
+                                  <span className="tabular-nums text-muted-foreground">{o.count}</span>
                                 </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Traffic Sources */}
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Traffic Sources</CardTitle></CardHeader>
-                    <CardContent>
-                      {analytics.sources.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No data yet</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {analytics.sources.map((s) => {
-                            const total = analytics.sources.reduce((sum, x) => sum + x.count, 0);
-                            const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
-                            return (
-                              <div key={s.source} className="flex items-center justify-between text-sm">
-                                <span className="capitalize">{s.source}</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="text-muted-foreground">{pct}%</span>
-                                  <span className="font-semibold tabular-nums w-8 text-right">{s.count}</span>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
 
                   {/* Browsers */}
                   <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Browsers</CardTitle></CardHeader>
-                    <CardContent>
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Browsers</CardTitle>
+                    </CardHeader>
+                    <CardContent className="px-5 pb-4">
                       {analytics.browsers.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No data yet</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {analytics.browsers.slice(0, 6).map((b) => (
-                            <div key={b.browser} className="flex items-center justify-between text-sm">
-                              <span>{b.browser}</span>
-                              <span className="font-semibold tabular-nums">{b.count}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* OS */}
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Operating Systems</CardTitle></CardHeader>
-                    <CardContent>
-                      {analytics.os.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No data yet</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {analytics.os.slice(0, 6).map((o) => (
-                            <div key={o.os} className="flex items-center justify-between text-sm">
-                              <span>{o.os}</span>
-                              <span className="font-semibold tabular-nums">{o.count}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Countries */}
-                  <Card>
-                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Countries</CardTitle></CardHeader>
-                    <CardContent>
-                      {analytics.countries.length === 0 ? (
-                        <p className="text-sm text-muted-foreground">No country data (requires Cloudflare)</p>
-                      ) : (
-                        <div className="space-y-2">
-                          {analytics.countries.slice(0, 8).map((c) => (
-                            <div key={c.country} className="flex items-center justify-between text-sm">
-                              <span>{c.country}</span>
-                              <span className="font-semibold tabular-nums">{c.count}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
+                        <p className="text-sm text-muted-foreground py-4">No data yet</p>
+                      ) : (() => {
+                        const total = analytics.browsers.reduce((s, x) => s + x.count, 0);
+                        return (
+                          <div className="space-y-3 mt-1">
+                            {analytics.browsers.slice(0, 5).map((b) => {
+                              const pct = total > 0 ? Math.round((b.count / total) * 100) : 0;
+                              return (
+                                <div key={b.browser}>
+                                  <div className="flex items-center justify-between mb-1">
+                                    <span className="text-[13px]">{b.browser}</span>
+                                    <span className="text-[13px] tabular-nums text-muted-foreground">{pct}%</span>
+                                  </div>
+                                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full bg-foreground/60 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
                     </CardContent>
                   </Card>
                 </div>
 
-                {/* Recent Views */}
-                <Card>
-                  <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Recent Visits</CardTitle></CardHeader>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Profile</TableHead>
-                        <TableHead>Device</TableHead>
-                        <TableHead className="hidden sm:table-cell">Browser / OS</TableHead>
-                        <TableHead>Source</TableHead>
-                        <TableHead className="hidden md:table-cell">Location</TableHead>
-                        <TableHead className="text-right">Time</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {analytics.recent.map((v) => (
-                        <TableRow key={v.id}>
-                          <TableCell className="text-sm font-medium">{v.employee.full_name}</TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="text-[10px] capitalize">{v.device_type}</Badge>
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
-                            {v.browser} / {v.os}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-[10px] capitalize">{v.source}</Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
-                            {[v.city, v.country].filter(Boolean).join(", ") || "—"}
-                          </TableCell>
-                          <TableCell className="text-right text-xs text-muted-foreground">
-                            {new Date(v.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </Card>
-
-                {/* Refresh */}
-                <div className="flex justify-end">
-                  <Button variant="outline" size="sm" onClick={fetchAnalytics} disabled={analyticsLoading}>
-                    <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
-                    Refresh
-                  </Button>
-                </div>
+                {/* Recent activity */}
+                {analytics.recent.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-1 pt-4 px-5">
+                      <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Recent Activity</CardTitle>
+                    </CardHeader>
+                    <div className="px-5 pb-4">
+                      <div className="divide-y">
+                        {analytics.recent.slice(0, 15).map((v) => (
+                          <div key={v.id} className="flex items-center gap-3 py-2.5 first:pt-1">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <p className="text-[13px] font-medium truncate">{v.employee.full_name}</p>
+                                <Badge variant="outline" className="text-[9px] capitalize shrink-0 h-4 px-1.5">{v.source}</Badge>
+                              </div>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">
+                                {v.device_type} · {v.browser} · {v.os}
+                                {v.country && ` · ${v.city ? v.city + ", " : ""}${v.country}`}
+                              </p>
+                            </div>
+                            <span className="text-[11px] text-muted-foreground shrink-0 tabular-nums">
+                              {new Date(v.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </Card>
+                )}
               </div>
             ) : (
               <Card>
