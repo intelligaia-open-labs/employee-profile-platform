@@ -24,6 +24,24 @@ export const createEmployeeSchema = z.object({
 
 export const updateEmployeeSchema = createEmployeeSchema.partial();
 
+export const createCredentialSchema = z.object({
+  employee_id: z.string().uuid("Invalid employee ID"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  role: z.enum(["admin", "editor", "viewer"]).default("viewer"),
+  permissions: z.array(z.string()).default(["profile:view", "profile:edit"]),
+});
+
+export const updateCredentialSchema = z.object({
+  email: z.string().email("Invalid email address").optional(),
+  password: z.string().min(8, "Password must be at least 8 characters").optional(),
+  role: z.enum(["admin", "editor", "viewer"]).optional(),
+  permissions: z.array(z.string()).optional(),
+  is_active: z.boolean().optional(),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
+export type CreateCredentialInput = z.infer<typeof createCredentialSchema>;
+export type UpdateCredentialInput = z.infer<typeof updateCredentialSchema>;

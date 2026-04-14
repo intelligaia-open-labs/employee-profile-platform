@@ -11,6 +11,7 @@ import { authRouter } from "./routes/auth";
 import { employeeRouter } from "./routes/employees";
 import { publicRouter } from "./routes/public";
 import { meetingRouter } from "./routes/meetings";
+import { credentialRouter } from "./routes/credentials";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(cors({
 }));
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 500,
   standardHeaders: true,
   legacyHeaders: false,
 }));
@@ -43,6 +44,7 @@ app.use("/auth", authRouter);
 app.use("/employees", employeeRouter);
 app.use("/public", publicRouter);
 app.use("/meeting-requests", meetingRouter);
+app.use("/credentials", credentialRouter);
 
 // Health check
 app.get("/health", (_req, res) => {

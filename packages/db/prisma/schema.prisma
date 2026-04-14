@@ -38,6 +38,7 @@ model Employee {
   phone_numbers    PhoneNumber[]
   qr_code          QRCode?
   meeting_requests MeetingRequest[]
+  credential       EmployeeCredential?
 
   @@index([slug])
   @@index([is_active])
@@ -80,6 +81,24 @@ model QRCode {
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
   @@map("qr_codes")
+}
+
+model EmployeeCredential {
+  id            String   @id @default(uuid()) @db.Uuid
+  employee_id   String   @unique @db.Uuid
+  email         String   @unique
+  password_hash String
+  role          String   @default("viewer")
+  permissions   String[] @default(["profile:view", "profile:edit"])
+  is_active     Boolean  @default(true)
+  last_login    DateTime?
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@map("employee_credentials")
 }
 
 model MeetingRequest {

@@ -19,6 +19,9 @@ const employeeInclude = {
   qr_code: {
     select: { id: true, qr_url: true, scan_count: true },
   },
+  credential: {
+    select: { id: true, email: true, role: true, permissions: true, is_active: true, last_login: true, created_at: true },
+  },
 };
 
 /** Delete a file — handles S3 keys, S3 URLs, and local paths */

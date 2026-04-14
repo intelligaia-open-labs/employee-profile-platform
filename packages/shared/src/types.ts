@@ -36,6 +36,29 @@ export interface QRCodePublic {
   scan_count: number;
 }
 
+export interface EmployeeCredentialPublic {
+  id: string;
+  employee_id: string;
+  email: string;
+  role: string;
+  permissions: string[];
+  is_active: boolean;
+  last_login: string | null;
+  created_at: string;
+}
+
+export const EMPLOYEE_ROLES = ["admin", "editor", "viewer"] as const;
+export type EmployeeRole = (typeof EMPLOYEE_ROLES)[number];
+
+export const EMPLOYEE_PERMISSIONS = [
+  "profile:edit",
+  "profile:view",
+  "meetings:manage",
+  "meetings:view",
+  "analytics:view",
+] as const;
+export type EmployeePermission = (typeof EMPLOYEE_PERMISSIONS)[number];
+
 export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
