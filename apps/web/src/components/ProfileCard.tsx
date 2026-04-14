@@ -617,12 +617,14 @@ export function ProfileCard({ employee }: Props) {
               )}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={`${API_URL}/public/qr/${employee.slug}`}
+                src={employee.qr_code?.qr_url || `${API_URL}/public/qr/${employee.slug}`}
                 alt="QR Code"
                 className={`w-[200px] h-[200px] border rounded-xl transition-opacity duration-300 ${qrLoaded ? "opacity-100" : "opacity-0"}`}
                 onLoad={() => setQrLoaded(true)}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`;
+                  const qrUrl = new URL(window.location.href);
+                  qrUrl.searchParams.set("source", "qr");
+                  (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl.toString())}`;
                 }}
               />
             </div>
