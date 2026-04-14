@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { MeetingDialog } from "./MeetingDialog";
@@ -12,8 +12,11 @@ interface Props {
   employee: EmployeePublic;
 }
 
+const VISIBLE_SOCIAL_COUNT = 4;
+
 export function ProfileCard({ employee }: Props) {
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [showAllSocial, setShowAllSocial] = useState(false);
 
   // Use phone_numbers if available, fall back to legacy phone field
   const primaryPhone =
@@ -35,12 +38,12 @@ export function ProfileCard({ employee }: Props) {
     telegram: { icon: "/profile/icon-telegram.svg", subtitle: "Join our Telegram channel" },
     website: { icon: "/profile/icon-website.svg", subtitle: "Visit our company website" },
     webpage: { icon: "/profile/icon-website.svg", subtitle: "Visit our company website" },
-    instagram: { icon: "/profile/icon-website.svg", subtitle: "Follow us on Instagram" },
-    "x (twitter)": { icon: "/profile/icon-website.svg", subtitle: "Follow us on X" },
-    twitter: { icon: "/profile/icon-website.svg", subtitle: "Follow us on X" },
-    youtube: { icon: "/profile/icon-website.svg", subtitle: "Watch us on YouTube" },
-    facebook: { icon: "/profile/icon-website.svg", subtitle: "Follow us on Facebook" },
-    github: { icon: "/profile/icon-website.svg", subtitle: "View our code on GitHub" },
+    instagram: { icon: "/profile/icon-instagram.svg", subtitle: "Follow us on Instagram" },
+    "x (twitter)": { icon: "/profile/icon-twitter.svg", subtitle: "Follow us on X" },
+    twitter: { icon: "/profile/icon-twitter.svg", subtitle: "Follow us on X" },
+    youtube: { icon: "/profile/icon-youtube.svg", subtitle: "Watch us on YouTube" },
+    facebook: { icon: "/profile/icon-facebook.svg", subtitle: "Follow us on Facebook" },
+    github: { icon: "/profile/icon-github.svg", subtitle: "View our code on GitHub" },
   };
 
   function resolveHref(platform: string, url: string): string {
@@ -276,8 +279,11 @@ export function ProfileCard({ employee }: Props) {
                 {/* Divider */}
                 <div className="w-full h-px bg-[#e5e5e5]" />
 
-                {/* Social link rows */}
-                {socialItems.map((item) => (
+                {/* Social link rows — show first 4, expand on click */}
+                {(showAllSocial
+                  ? socialItems
+                  : socialItems.slice(0, VISIBLE_SOCIAL_COUNT)
+                ).map((item) => (
                   <a
                     key={item.key}
                     href={item.href}
@@ -289,7 +295,7 @@ export function ProfileCard({ employee }: Props) {
                     <img
                       src={item.icon}
                       alt=""
-                      className="w-[48px] h-[48px] shrink-0"
+                      className="w-[48px] h-[48px] shrink-0 rounded-full"
                     />
                     <div className="flex flex-col gap-[2px] flex-1 min-w-0">
                       <p className="text-[16px] font-medium text-[#121212] leading-[18px] group-hover:underline">
@@ -307,6 +313,30 @@ export function ProfileCard({ employee }: Props) {
                     />
                   </a>
                 ))}
+
+                {/* See more / See less toggle */}
+                {socialItems.length > VISIBLE_SOCIAL_COUNT && (
+                  <button
+                    onClick={() => setShowAllSocial(!showAllSocial)}
+                    className="flex items-center justify-center gap-2 w-full py-2 text-[13px] font-medium text-[#727272] hover:text-[#121212] transition-colors"
+                  >
+                    {showAllSocial ? (
+                      <>
+                        Show less
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        See all {socialItems.length} links
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
             )}
 

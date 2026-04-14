@@ -29,11 +29,11 @@ const SOCIAL_PLATFORMS = [
   { key: "whatsapp", label: "WhatsApp", icon: "/profile/icon-whatsapp.svg", placeholder: "WhatsApp number with country code (e.g. +919058140003)", type: "tel" },
   { key: "telegram", label: "Telegram", icon: "/profile/icon-telegram.svg", placeholder: "https://t.me/username", type: "url" },
   { key: "website", label: "Website", icon: "/profile/icon-website.svg", placeholder: "https://www.example.com", type: "url" },
-  { key: "twitter", label: "X (Twitter)", icon: "/profile/icon-website.svg", placeholder: "https://x.com/username", type: "url" },
-  { key: "instagram", label: "Instagram", icon: "/profile/icon-website.svg", placeholder: "https://instagram.com/username", type: "url" },
-  { key: "youtube", label: "YouTube", icon: "/profile/icon-website.svg", placeholder: "https://youtube.com/@channel", type: "url" },
-  { key: "facebook", label: "Facebook", icon: "/profile/icon-website.svg", placeholder: "https://facebook.com/page", type: "url" },
-  { key: "github", label: "GitHub", icon: "/profile/icon-website.svg", placeholder: "https://github.com/username", type: "url" },
+  { key: "twitter", label: "X (Twitter)", icon: "/profile/icon-twitter.svg", placeholder: "https://x.com/username", type: "url" },
+  { key: "instagram", label: "Instagram", icon: "/profile/icon-instagram.svg", placeholder: "https://instagram.com/username", type: "url" },
+  { key: "youtube", label: "YouTube", icon: "/profile/icon-youtube.svg", placeholder: "https://youtube.com/@channel", type: "url" },
+  { key: "facebook", label: "Facebook", icon: "/profile/icon-facebook.svg", placeholder: "https://facebook.com/page", type: "url" },
+  { key: "github", label: "GitHub", icon: "/profile/icon-github.svg", placeholder: "https://github.com/username", type: "url" },
 ] as const;
 
 interface PhoneNumberInput {
