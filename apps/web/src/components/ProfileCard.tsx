@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { MeetingDialog } from "./MeetingDialog";
@@ -517,6 +518,7 @@ export function ProfileCard({ employee }: Props) {
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
+                  toast.success("Link copied to clipboard");
                   setShareOpen(false);
                 }}
                 className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors text-left"

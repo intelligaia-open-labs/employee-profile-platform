@@ -64,7 +64,7 @@ export default function EditEmployeePage({
             <span className="text-sm font-semibold">Edit Employee</span>
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/profile/logo.svg" alt="Logo" className="h-5 w-auto opacity-50 dark:invert" />
+          <img src="/profile/logo-dark.svg" alt="Logo" className="h-5 w-auto opacity-50" />
         </div>
       </header>
       <main className="py-8 px-4 sm:px-6">

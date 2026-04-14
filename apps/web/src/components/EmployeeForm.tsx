@@ -6,6 +6,7 @@ import { clientApiFetch } from "@/lib/api";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { resolveImageUrl } from "@/lib/image";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -217,9 +218,12 @@ export function EmployeeForm({ employee }: Props) {
         });
       }
 
+      toast.success(isEdit ? "Employee updated" : "Employee created");
       router.push("/admin");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save");
+      const msg = err instanceof Error ? err.message : "Failed to save";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }

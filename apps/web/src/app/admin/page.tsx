@@ -13,6 +13,9 @@ import { resolveImageUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import {
   Table,
   TableBody,
@@ -53,6 +56,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [meetings, setMeetings] = useState<MeetingRequestData[]>([]);
   const [qrPreview, setQrPreview] = useState<{ url: string; name: string; slug: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -87,23 +91,39 @@ export default function AdminDashboard() {
   }, [admin, fetchEmployees, fetchMeetings]);
 
   async function toggleActive(id: string) {
-    await clientApiFetch(`/employees/${id}/toggle-active`, { method: "PATCH" });
-    fetchEmployees();
+    try {
+      await clientApiFetch(`/employees/${id}/toggle-active`, { method: "PATCH" });
+      fetchEmployees();
+      toast.success("Status updated");
+    } catch {
+      toast.error("Failed to update status");
+    }
   }
 
   async function deleteEmployee(id: string) {
-    if (!confirm("Are you sure you want to delete this employee?")) return;
-    await clientApiFetch(`/employees/${id}`, { method: "DELETE" });
-    fetchEmployees();
+    try {
+      await clientApiFetch(`/employees/${id}`, { method: "DELETE" });
+      fetchEmployees();
+      toast.success("Employee deleted");
+    } catch {
+      toast.error("Failed to delete employee");
+    } finally {
+      setDeleteTarget(null);
+    }
   }
 
   async function updateMeetingStatus(id: string, status: string) {
-    await clientApiFetch(`/meeting-requests/${id}/status`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
-    fetchMeetings();
+    try {
+      await clientApiFetch(`/meeting-requests/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+      fetchMeetings();
+      toast.success(`Meeting ${status}`);
+    } catch {
+      toast.error("Failed to update meeting");
+    }
   }
 
   const activeCount = employees.filter((e) => e.is_active).length;
@@ -115,8 +135,46 @@ export default function AdminDashboard() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="w-5 h-5 border-2 border-muted-foreground border-t-primary rounded-full animate-spin" />
+      <div className="min-h-screen bg-muted/40">
+        <header className="border-b bg-background">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+            <Skeleton className="h-5 w-24" />
+            <Skeleton className="h-5 w-32" />
+          </div>
+        </header>
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <Card key={i}>
+                <CardHeader className="pb-2">
+                  <Skeleton className="h-4 w-24" />
+                </CardHeader>
+                <CardContent>
+                  <Skeleton className="h-9 w-16" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          <div className="flex items-center justify-between mb-4">
+            <Skeleton className="h-6 w-24" />
+            <Skeleton className="h-9 w-32" />
+          </div>
+          <Card>
+            <div className="p-4 space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <Skeleton className="h-9 w-9 rounded-lg" />
+                  <div className="flex-1 space-y-1.5">
+                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-48" />
+                  </div>
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-6 w-14 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </Card>
+        </main>
       </div>
     );
   }
@@ -128,7 +186,7 @@ export default function AdminDashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/profile/logo.svg" alt="Logo" className="h-5 w-auto dark:invert" />
+            <img src="/profile/logo-dark.svg" alt="Logo" className="h-5 w-auto" />
             <Separator orientation="vertical" className="h-5" />
             <span className="text-sm font-medium text-muted-foreground">Dashboard</span>
           </div>
@@ -330,7 +388,7 @@ export default function AdminDashboard() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => deleteEmployee(emp.id)}
+                            onClick={() => setDeleteTarget(emp.id)}
                             className="text-muted-foreground hover:text-destructive"
                           >
                             Delete
@@ -480,6 +538,16 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete Employee"
+        description="This will permanently delete this employee's profile, QR code, and all associated data. This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => deleteTarget && deleteEmployee(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
