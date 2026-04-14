@@ -299,7 +299,7 @@ export default function EmployeePortal() {
                 <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">QR Code</CardTitle></CardHeader>
                 <CardContent className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`${API_URL}/public/qr/${profile.slug}`} alt="QR Code" className="w-24 h-24 border rounded-lg" />
+                  <img src={profile.qr_code!.qr_url} alt="QR Code" className="w-24 h-24 border rounded-lg" />
                   <div>
                     <p className="text-sm font-medium">{profile.qr_code.scan_count} scans</p>
                     <p className="text-xs text-muted-foreground mt-1">Share this QR code for people to view your profile</p>

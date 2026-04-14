@@ -613,7 +613,7 @@ export default function AdminDashboard() {
                                   size="sm"
                                   onClick={() =>
                                     setQrPreview({
-                                      url: `${API_URL}/public/qr/${emp.slug}`,
+                                      url: emp.qr_code!.qr_url,
                                       name: emp.full_name,
                                       slug: emp.slug,
                                     })
