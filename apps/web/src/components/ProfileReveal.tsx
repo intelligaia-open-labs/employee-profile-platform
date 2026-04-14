@@ -77,19 +77,6 @@ export function ProfileReveal({ children }: Props) {
         </p>
       </div>
 
-      {/* Stage dots */}
-      <div className="flex gap-2">
-        {STAGES.map((s, i) => (
-          <div
-            key={i}
-            className="w-1.5 h-1.5 rounded-full transition-all duration-300"
-            style={{
-              backgroundColor: i <= stage ? s.color : "#e0e0e0",
-              transform: i === stage && !done ? "scale(1.5)" : "scale(1)",
-            }}
-          />
-        ))}
-      </div>
 
       <style>{`
         @keyframes building-float {
