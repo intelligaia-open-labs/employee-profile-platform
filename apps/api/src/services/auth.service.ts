@@ -5,7 +5,7 @@ import { env } from "../config/env";
 import { AppError } from "../middleware/error";
 import type { AuthPayload } from "../middleware/auth";
 
-const TOKEN_EXPIRY = "7d";
+const TOKEN_EXPIRY = "8h";
 
 export async function loginAdmin(email: string, password: string): Promise<string> {
   const admin = await prisma.admin.findUnique({ where: { email } });
@@ -33,7 +33,7 @@ export function buildCookieOptions() {
     httpOnly: true,
     secure: env.NODE_ENV === "production",
     sameSite: "lax" as const,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 8 * 60 * 60 * 1000, // 8 hours
     path: "/",
   };
 }
