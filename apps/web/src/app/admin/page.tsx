@@ -630,6 +630,14 @@ export default function AdminDashboard() {
                               <Button variant="ghost" size="sm" asChild>
                                 <Link href={`/admin/employees/${emp.id}`}>Edit</Link>
                               </Button>
+                              <Button variant="ghost" size="sm" asChild>
+                                <Link href={`/admin/analytics/${emp.id}`}>
+                                  <svg className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                                  </svg>
+                                  Stats
+                                </Link>
+                              </Button>
                               {emp.qr_code && (
                                 <Button
                                   variant="outline"
@@ -1017,7 +1025,7 @@ export default function AdminDashboard() {
                           {analytics.byEmployee.slice(0, 6).map((item, i) => {
                             const max = analytics.byEmployee[0]?.views || 1;
                             return (
-                              <div key={item.employee.slug} className="flex items-center gap-3">
+                              <Link key={item.employee.slug} href={`/admin/analytics/${item.employee.id}`} className="flex items-center gap-3 hover:bg-muted/50 -mx-2 px-2 py-1 rounded-lg transition-colors">
                                 <span className="text-[11px] font-medium text-muted-foreground/50 w-4 tabular-nums">{i + 1}</span>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center justify-between mb-1">
@@ -1028,7 +1036,7 @@ export default function AdminDashboard() {
                                     <div className="h-full bg-foreground/70 rounded-full transition-all" style={{ width: `${(item.views / max) * 100}%` }} />
                                   </div>
                                 </div>
-                              </div>
+                              </Link>
                             );
                           })}
                         </div>
