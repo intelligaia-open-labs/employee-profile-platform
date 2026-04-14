@@ -1,9 +1,9 @@
 import multer from "multer";
 import multerS3 from "multer-s3";
-import { S3Client } from "@aws-sdk/client-s3";
 import path from "path";
 import crypto from "crypto";
 import { env, useS3 } from "../config/env";
+import { getS3Client } from "../utils/s3";
 
 const fileFilter = (
   _req: Express.Request,
@@ -20,17 +20,9 @@ const fileFilter = (
 
 function createUpload() {
   if (useS3) {
-    const s3 = new S3Client({
-      region: env.AWS_REGION,
-      credentials: {
-        accessKeyId: env.AWS_ACCESS_KEY_ID!,
-        secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
-      },
-    });
-
     return multer({
       storage: multerS3({
-        s3,
+        s3: getS3Client(),
         bucket: env.AWS_S3_BUCKET!,
         contentType: multerS3.AUTO_CONTENT_TYPE,
         key: (_req, file, cb) => {
@@ -43,7 +35,6 @@ function createUpload() {
     });
   }
 
-  // Local disk fallback
   const storage = multer.diskStorage({
     destination: (_req, _file, cb) => {
       cb(null, path.join(__dirname, "../../uploads/profiles"));
@@ -59,14 +50,10 @@ function createUpload() {
 
 export const upload = createUpload();
 
-/**
- * Get the URL/path for an uploaded file.
- * S3: returns the full S3 URL (file.location)
- * Local: returns /uploads/profiles/filename
- */
+/** Get the stored path/key for an uploaded file */
 export function getUploadedFilePath(file: Express.Multer.File): string {
-  if (useS3 && "location" in file) {
-    return (file as Express.Multer.File & { location: string }).location;
+  if (useS3 && "key" in file) {
+    return (file as Express.Multer.File & { key: string }).key;
   }
   return `/uploads/profiles/${file.filename}`;
 }

@@ -1,5 +1,5 @@
 import { Router, Request, Response, NextFunction } from "express";
-import { getEmployeeBySlug, incrementScanCount } from "../services/employee.service";
+import { getEmployeeBySlug, incrementScanCount, resolveEmployeeUrls } from "../services/employee.service";
 import { generateVCard } from "../utils/vcard";
 import { AppError } from "../middleware/error";
 import { prisma } from "@business-profile/db";
@@ -18,7 +18,7 @@ publicRouter.get("/profile/:slug", async (req: Request, res: Response, next: Nex
     // Increment scan count in the background
     incrementScanCount(req.params.slug).catch(() => {});
 
-    res.json({ success: true, data: employee });
+    res.json({ success: true, data: await resolveEmployeeUrls(employee) });
   } catch (err) {
     next(err);
   }

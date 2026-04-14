@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [meetings, setMeetings] = useState<MeetingRequestData[]>([]);
+  const [qrPreview, setQrPreview] = useState<{ url: string; name: string; slug: string } | null>(null);
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -308,16 +309,22 @@ export default function AdminDashboard() {
                             </Link>
                           </Button>
                           {emp.qr_code && (
-                            <Button variant="outline" size="sm" asChild>
-                              <a
-                                href={resolveImageUrl(emp.qr_code.qr_url)!}
-                                download={`${emp.slug}-qr.png`}
-                              >
-                                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                QR Code
-                              </a>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                setQrPreview({
+                                  url: resolveImageUrl(emp.qr_code!.qr_url)!,
+                                  name: emp.full_name,
+                                  slug: emp.slug,
+                                })
+                              }
+                            >
+                              <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 14.625v2.25m0 2.25h2.25m2.25 0h-2.25m0 0v-2.25m0 0h2.25" />
+                              </svg>
+                              QR
                             </Button>
                           )}
                           <Button
@@ -424,6 +431,55 @@ export default function AdminDashboard() {
           </>
         )}
       </main>
+
+      {/* QR Preview Modal */}
+      {qrPreview && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setQrPreview(null)}
+          />
+          <div className="relative bg-background rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4">
+            <button
+              onClick={() => setQrPreview(null)}
+              className="absolute top-3 right-3 text-muted-foreground hover:text-foreground"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <h3 className="text-lg font-semibold mb-1">{qrPreview.name}</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
+                /p/{qrPreview.slug}
+              </code>
+            </p>
+            <div className="flex justify-center mb-4">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={qrPreview.url}
+                alt={`QR code for ${qrPreview.name}`}
+                className="w-[200px] h-[200px] border rounded-lg"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button asChild className="flex-1">
+                <a href={qrPreview.url} download={`${qrPreview.slug}-qr.png`}>
+                  <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download
+                </a>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href={`/p/${qrPreview.slug}`} target="_blank">
+                  View Profile
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

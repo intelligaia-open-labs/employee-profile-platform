@@ -3,8 +3,8 @@ import type { CreateEmployeeInput, UpdateEmployeeInput } from "@business-profile
 import { generateSlug } from "../utils/slug";
 import { generateQRCode } from "../utils/qr";
 import { AppError } from "../middleware/error";
-import { useS3, env } from "../config/env";
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { useS3 } from "../config/env";
+import { deleteFromS3, extractS3Key, getPresignedUrl } from "../utils/s3";
 import fs from "fs/promises";
 import path from "path";
 
@@ -21,30 +21,45 @@ const employeeInclude = {
   },
 };
 
-/** Delete a file — handles both S3 URLs and local paths */
+/** Delete a file — handles S3 keys, S3 URLs, and local paths */
 async function deleteFile(filePath: string) {
   if (!filePath) return;
 
-  if (filePath.startsWith("https://") && useS3) {
-    try {
-      const s3 = new S3Client({
-        region: env.AWS_REGION,
-        credentials: {
-          accessKeyId: env.AWS_ACCESS_KEY_ID!,
-          secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
-        },
-      });
-      // Extract key from S3 URL
-      const url = new URL(filePath);
-      const key = url.pathname.slice(1); // remove leading /
-      await s3.send(new DeleteObjectCommand({ Bucket: env.AWS_S3_BUCKET!, Key: key }));
-    } catch {
-      // silent — file may already be deleted
-    }
+  const s3Key = extractS3Key(filePath);
+  if (s3Key) {
+    await deleteFromS3(s3Key).catch(() => {});
   } else {
     const localPath = path.join(__dirname, "../../", filePath);
     await fs.unlink(localPath).catch(() => {});
   }
+}
+
+/** Resolve a stored path to a viewable URL (presigned for S3) */
+async function resolveUrl(storedPath: string | null): Promise<string | null> {
+  if (!storedPath) return null;
+  const s3Key = extractS3Key(storedPath);
+  if (s3Key) {
+    return getPresignedUrl(s3Key);
+  }
+  return storedPath;
+}
+
+/** Resolve all file URLs in an employee record */
+export async function resolveEmployeeUrls<T extends { profile_image: string | null; qr_code: { qr_url: string } | null }>(
+  employee: T,
+): Promise<T> {
+  const [profileImage, qrUrl] = await Promise.all([
+    resolveUrl(employee.profile_image),
+    employee.qr_code ? resolveUrl(employee.qr_code.qr_url) : null,
+  ]);
+
+  return {
+    ...employee,
+    profile_image: profileImage,
+    qr_code: employee.qr_code
+      ? { ...employee.qr_code, qr_url: qrUrl! }
+      : null,
+  };
 }
 
 export async function createEmployee(data: CreateEmployeeInput, profileImage?: string) {
