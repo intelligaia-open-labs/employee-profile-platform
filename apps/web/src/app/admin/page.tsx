@@ -9,6 +9,19 @@ import type {
 } from "@business-profile/shared";
 import Link from "next/link";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -63,191 +76,213 @@ export default function AdminDashboard() {
 
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-5 h-5 border-2 border-ink-tertiary border-t-accent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-5 h-5 border-2 border-muted-foreground border-t-primary rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-muted/40">
       {/* Header */}
-      <header className="border-b">
-        <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
-          <Link
-            href="/admin"
-            className="text-sm font-bold tracking-tight text-ink"
-          >
-            Business Profile
-          </Link>
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/profile/logo.svg" alt="Logo" className="h-5 w-auto dark:invert" />
+            <Separator orientation="vertical" className="h-5" />
+            <span className="text-sm font-medium text-muted-foreground">Dashboard</span>
+          </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-ink-tertiary">{admin?.email}</span>
-            <button
+            <span className="text-sm text-muted-foreground hidden sm:inline">
+              {admin?.email}
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={logout}
-              className="text-sm font-medium text-ink-secondary hover:text-danger transition-colors"
+              className="text-muted-foreground hover:text-destructive"
             >
               Sign out
-            </button>
+            </Button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-10">
-        {/* Title + Stats */}
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-ink">Employees</h1>
-            <p className="mt-1 text-sm text-ink-tertiary tabular-nums">
-              {total} total
-              <span className="mx-1.5" style={{ color: "var(--border-strong)" }}>
-                ·
-              </span>
-              {activeCount} active
-              <span className="mx-1.5" style={{ color: "var(--border-strong)" }}>
-                ·
-              </span>
-              {totalScans} scans
-            </p>
-          </div>
-          <Link
-            href="/admin/employees/new"
-            className="btn-primary px-4 py-2 bg-accent text-surface-raised text-sm font-semibold rounded-lg"
-          >
-            Add employee
-          </Link>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Employees
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold tabular-nums">{total}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Active Profiles
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold tabular-nums text-green-600">
+                {activeCount}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total QR Scans
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold tabular-nums">{totalScans}</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Table */}
-        {employees.length === 0 ? (
-          <div className="py-20 text-center">
-            <p className="text-ink-secondary">No employees yet</p>
-            <p className="mt-1.5 text-sm text-ink-tertiary max-w-xs mx-auto">
-              Add your first employee to generate their digital profile and QR
-              code.
-            </p>
+        {/* Employees Section */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-lg font-semibold">Employees</h1>
           </div>
+          <Button asChild size="sm">
+            <Link href="/admin/employees/new">
+              <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Employee
+            </Link>
+          </Button>
+        </div>
+
+        {employees.length === 0 ? (
+          <Card>
+            <CardContent className="py-16 text-center">
+              <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+              </div>
+              <p className="font-medium text-foreground">No employees yet</p>
+              <p className="mt-1 text-sm text-muted-foreground max-w-xs mx-auto">
+                Add your first employee to generate their digital profile and QR code.
+              </p>
+              <Button asChild size="sm" className="mt-4">
+                <Link href="/admin/employees/new">Add Employee</Link>
+              </Button>
+            </CardContent>
+          </Card>
         ) : (
-          <div className="overflow-hidden rounded-xl border">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b bg-accent-subtle">
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-ink-secondary tracking-wide uppercase">
-                    Employee
-                  </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-ink-secondary tracking-wide uppercase">
-                    Designation
-                  </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-ink-secondary tracking-wide uppercase">
-                    Status
-                  </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-ink-secondary tracking-wide uppercase">
-                    QR Scans
-                  </th>
-                  <th className="px-5 py-3 text-left text-[11px] font-semibold text-ink-secondary tracking-wide uppercase">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
+          <Card>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Employee</TableHead>
+                  <TableHead className="hidden sm:table-cell">Designation</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Scans</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {employees.map((emp) => {
                   const hue = nameHue(emp.full_name);
                   return (
-                    <tr
-                      key={emp.id}
-                      className="hover:bg-accent-subtle transition-colors"
-                    >
-                      <td className="px-5 py-4">
+                    <TableRow key={emp.id}>
+                      <TableCell>
                         <div className="flex items-center gap-3">
-                          {emp.profile_image ? (
-                            <Image
-                              src={`${API_URL}${emp.profile_image}`}
-                              alt={emp.full_name}
-                              width={36}
-                              height={36}
-                              className="rounded-lg object-cover w-9 h-9"
-                            />
-                          ) : (
-                            <div
-                              className="w-9 h-9 rounded-lg flex items-center justify-center"
+                          <Avatar className="h-9 w-9 rounded-lg">
+                            {emp.profile_image ? (
+                              <AvatarImage
+                                src={`${API_URL}${emp.profile_image}`}
+                                alt={emp.full_name}
+                                className="object-cover"
+                              />
+                            ) : null}
+                            <AvatarFallback
+                              className="rounded-lg text-sm font-semibold"
                               style={{
                                 backgroundColor: `oklch(0.92 0.04 ${hue})`,
                                 color: `oklch(0.40 0.12 ${hue})`,
                               }}
                             >
-                              <span className="text-sm font-semibold">
-                                {emp.full_name.charAt(0)}
-                              </span>
-                            </div>
-                          )}
+                              {emp.full_name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
                           <div>
-                            <p className="text-sm font-medium text-ink">
+                            <p className="text-sm font-medium leading-tight">
                               {emp.full_name}
                             </p>
-                            <p className="text-xs text-ink-tertiary">
+                            <p className="text-xs text-muted-foreground">
                               {emp.email}
                             </p>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-ink-secondary">
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
                         {emp.designation}
-                      </td>
-                      <td className="px-5 py-4">
-                        <button
-                          onClick={() => toggleActive(emp.id)}
-                          className="flex items-center gap-2 group"
-                        >
-                          <span
-                            className={`w-2 h-2 rounded-full ${
-                              emp.is_active ? "bg-success" : "bg-ink-tertiary"
+                      </TableCell>
+                      <TableCell>
+                        <button onClick={() => toggleActive(emp.id)}>
+                          <Badge
+                            variant={emp.is_active ? "default" : "secondary"}
+                            className={`cursor-pointer text-xs ${
+                              emp.is_active
+                                ? "bg-green-100 text-green-800 hover:bg-green-200 border-0"
+                                : ""
                             }`}
-                          />
-                          <span className="text-sm text-ink-secondary group-hover:text-ink transition-colors">
+                          >
                             {emp.is_active ? "Active" : "Inactive"}
-                          </span>
+                          </Badge>
                         </button>
-                      </td>
-                      <td className="px-5 py-4 text-sm text-ink-secondary tabular-nums">
+                      </TableCell>
+                      <TableCell className="text-right text-sm tabular-nums text-muted-foreground">
                         {emp.qr_code?.scan_count ?? 0}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-3">
-                          <Link
-                            href={`/p/${emp.slug}`}
-                            target="_blank"
-                            className="text-sm text-ink-tertiary hover:text-accent transition-colors"
-                          >
-                            View
-                          </Link>
-                          <Link
-                            href={`/admin/employees/${emp.id}`}
-                            className="text-sm text-ink-tertiary hover:text-accent transition-colors"
-                          >
-                            Edit
-                          </Link>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/p/${emp.slug}`} target="_blank">
+                              View
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" size="sm" asChild>
+                            <Link href={`/admin/employees/${emp.id}`}>
+                              Edit
+                            </Link>
+                          </Button>
                           {emp.qr_code && (
-                            <a
-                              href={`${API_URL}${emp.qr_code.qr_url}`}
-                              download={`${emp.slug}-qr.png`}
-                              className="text-sm text-ink-tertiary hover:text-accent transition-colors"
-                            >
-                              QR
-                            </a>
+                            <Button variant="ghost" size="sm" asChild>
+                              <a
+                                href={`${API_URL}${emp.qr_code.qr_url}`}
+                                download={`${emp.slug}-qr.png`}
+                              >
+                                QR
+                              </a>
+                            </Button>
                           )}
-                          <button
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => deleteEmployee(emp.id)}
-                            className="text-sm text-ink-tertiary hover:text-danger transition-colors"
+                            className="text-muted-foreground hover:text-destructive"
                           >
                             Delete
-                          </button>
+                          </Button>
                         </div>
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+              </TableBody>
+            </Table>
+          </Card>
         )}
       </main>
     </div>

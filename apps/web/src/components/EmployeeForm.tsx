@@ -5,6 +5,11 @@ import { useRouter } from "next/navigation";
 import { clientApiFetch } from "@/lib/api";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -16,9 +21,6 @@ interface SocialLinkInput {
   platform: string;
   url: string;
 }
-
-const inputClass =
-  "w-full px-3.5 py-2.5 bg-surface-raised border rounded-lg text-ink text-sm placeholder:text-ink-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors";
 
 export function EmployeeForm({ employee }: Props) {
   const router = useRouter();
@@ -119,238 +121,240 @@ export function EmployeeForm({ employee }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-6">
       {error && (
-        <div className="mb-8 py-3 px-4 bg-danger-subtle text-danger text-sm rounded-lg">
+        <div className="py-2.5 px-3 bg-destructive/10 text-destructive text-sm rounded-lg">
           {error}
         </div>
       )}
 
-      {/* ── Section: Profile ── */}
-      <fieldset className="space-y-6">
-        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
-          Profile
-        </legend>
-
-        {/* Image upload */}
-        <label className="flex items-center gap-5 cursor-pointer group">
-          {imagePreview ? (
-            <Image
-              src={imagePreview}
-              alt="Preview"
-              width={80}
-              height={80}
-              className="w-20 h-20 rounded-xl object-cover"
-            />
-          ) : (
-            <div className="w-20 h-20 rounded-xl border-2 border-dashed border-[var(--border-strong)] flex flex-col items-center justify-center text-ink-tertiary group-hover:border-accent group-hover:text-accent transition-colors">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+      {/* Profile Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Profile</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          {/* Image upload */}
+          <div>
+            <Label className="mb-2 block">Profile Photo</Label>
+            <label className="flex items-center gap-4 cursor-pointer group">
+              {imagePreview ? (
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  width={72}
+                  height={72}
+                  className="w-[72px] h-[72px] rounded-xl object-cover"
                 />
-              </svg>
-              <span className="text-[10px] mt-1 font-medium">Upload</span>
-            </div>
-          )}
-          <div>
-            <p className="text-sm font-medium text-ink-secondary group-hover:text-ink transition-colors">
-              Profile photo
-            </p>
-            <p className="text-xs text-ink-tertiary mt-0.5">
-              JPEG, PNG or WebP. Max 5 MB.
-            </p>
-          </div>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-        </label>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              Full Name *
-            </label>
-            <input
-              required
-              value={form.full_name}
-              onChange={(e) => handleChange("full_name", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              Designation *
-            </label>
-            <input
-              required
-              value={form.designation}
-              onChange={(e) => handleChange("designation", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Bio
-          </label>
-          <textarea
-            rows={3}
-            value={form.bio}
-            onChange={(e) => handleChange("bio", e.target.value)}
-            className={inputClass}
-          />
-        </div>
-      </fieldset>
-
-      {/* ── Section: Contact ── */}
-      <fieldset className="mt-10 space-y-5">
-        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
-          Contact
-        </legend>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              Email *
-            </label>
-            <input
-              type="email"
-              required
-              value={form.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              Phone *
-            </label>
-            <input
-              required
-              value={form.phone}
-              onChange={(e) => handleChange("phone", e.target.value)}
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-            Address
-          </label>
-          <input
-            value={form.address}
-            onChange={(e) => handleChange("address", e.target.value)}
-            className={inputClass}
-          />
-        </div>
-      </fieldset>
-
-      {/* ── Section: Links ── */}
-      <fieldset className="mt-10 space-y-5">
-        <legend className="text-[11px] font-semibold tracking-[0.15em] uppercase text-ink-tertiary mb-5">
-          Links
-        </legend>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              LinkedIn URL
-            </label>
-            <input
-              type="url"
-              value={form.linkedin_url}
-              onChange={(e) => handleChange("linkedin_url", e.target.value)}
-              placeholder="https://linkedin.com/in/..."
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-ink-secondary mb-1.5">
-              Website URL
-            </label>
-            <input
-              type="url"
-              value={form.website_url}
-              onChange={(e) => handleChange("website_url", e.target.value)}
-              placeholder="https://..."
-              className={inputClass}
-            />
-          </div>
-        </div>
-
-        {/* Social links */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-medium text-ink-secondary">
-              Social Links
-            </label>
-            <button
-              type="button"
-              onClick={addSocialLink}
-              className="text-sm font-medium text-accent hover:text-accent-hover transition-colors"
-            >
-              + Add link
-            </button>
-          </div>
-          <div className="space-y-3">
-            {socialLinks.map((link, i) => (
-              <div key={i} className="flex gap-3">
-                <input
-                  placeholder="Platform"
-                  value={link.platform}
-                  onChange={(e) =>
-                    updateSocialLink(i, "platform", e.target.value)
-                  }
-                  className={`w-1/3 ${inputClass}`}
-                />
-                <input
-                  placeholder="URL"
-                  value={link.url}
-                  onChange={(e) => updateSocialLink(i, "url", e.target.value)}
-                  className={`flex-1 ${inputClass}`}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeSocialLink(i)}
-                  className="px-3 py-2 text-ink-tertiary hover:text-danger transition-colors"
-                >
-                  &times;
-                </button>
+              ) : (
+                <div className="w-[72px] h-[72px] rounded-xl border-2 border-dashed border-muted-foreground/30 flex flex-col items-center justify-center text-muted-foreground group-hover:border-primary group-hover:text-primary transition-colors">
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                    />
+                  </svg>
+                  <span className="text-[10px] mt-1 font-medium">Upload</span>
+                </div>
+              )}
+              <div>
+                <p className="text-sm font-medium group-hover:text-primary transition-colors">
+                  Choose file
+                </p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  JPEG, PNG or WebP. Max 5 MB.
+                </p>
               </div>
-            ))}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+            </label>
           </div>
-        </div>
-      </fieldset>
+
+          <Separator />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="full_name">Full Name *</Label>
+              <Input
+                id="full_name"
+                required
+                value={form.full_name}
+                onChange={(e) => handleChange("full_name", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="designation">Designation *</Label>
+              <Input
+                id="designation"
+                required
+                value={form.designation}
+                onChange={(e) => handleChange("designation", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <textarea
+              id="bio"
+              rows={3}
+              value={form.bio}
+              onChange={(e) => handleChange("bio", e.target.value)}
+              className="flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Contact Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Contact</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                required
+                value={form.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone *</Label>
+              <Input
+                id="phone"
+                required
+                value={form.phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="address">Address</Label>
+            <Input
+              id="address"
+              value={form.address}
+              onChange={(e) => handleChange("address", e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Links Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">Links</CardTitle>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={addSocialLink}
+              className="text-primary"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Social Link
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="linkedin_url">LinkedIn URL</Label>
+              <Input
+                id="linkedin_url"
+                type="url"
+                value={form.linkedin_url}
+                onChange={(e) => handleChange("linkedin_url", e.target.value)}
+                placeholder="https://linkedin.com/in/..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="website_url">Website URL</Label>
+              <Input
+                id="website_url"
+                type="url"
+                value={form.website_url}
+                onChange={(e) => handleChange("website_url", e.target.value)}
+                placeholder="https://..."
+              />
+            </div>
+          </div>
+
+          {socialLinks.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-3">
+                {socialLinks.map((link, i) => (
+                  <div key={i} className="flex gap-3">
+                    <Input
+                      placeholder="Platform"
+                      value={link.platform}
+                      onChange={(e) =>
+                        updateSocialLink(i, "platform", e.target.value)
+                      }
+                      className="w-1/3"
+                    />
+                    <Input
+                      placeholder="URL"
+                      value={link.url}
+                      onChange={(e) =>
+                        updateSocialLink(i, "url", e.target.value)
+                      }
+                      className="flex-1"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeSocialLink(i)}
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Submit */}
-      <div className="flex gap-3 mt-10 pt-8 border-t">
-        <button
-          type="submit"
-          disabled={saving}
-          className="btn-primary px-6 py-2.5 bg-accent text-surface-raised font-semibold text-sm rounded-lg disabled:opacity-50"
-        >
-          {saving ? "Saving..." : isEdit ? "Update Employee" : "Create Employee"}
-        </button>
-        <button
+      <div className="flex gap-3 pt-2">
+        <Button type="submit" disabled={saving}>
+          {saving
+            ? "Saving..."
+            : isEdit
+              ? "Update Employee"
+              : "Create Employee"}
+        </Button>
+        <Button
           type="button"
+          variant="outline"
           onClick={() => router.push("/admin")}
-          className="px-6 py-2.5 border text-ink-secondary font-medium text-sm rounded-lg hover:bg-accent-subtle transition-colors"
         >
           Cancel
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -3,6 +3,10 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { clientApiFetch } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -31,68 +35,72 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="w-full max-w-sm">
-        {/* Brand */}
-        <h2 className="text-[clamp(1.75rem,5vw,2.5rem)] font-bold leading-[1.08] tracking-tight text-ink">
-          Business
-          <br />
-          Profile
-        </h2>
+    <main className="relative min-h-screen flex items-center justify-center px-4">
+      {/* Building background */}
+      <div
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: "url(/profile/bg.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
+      <div className="fixed inset-0 z-0 bg-black/50" />
 
-        {/* Form */}
-        <div className="mt-10">
-          <h1 className="text-lg font-semibold text-ink">Sign in</h1>
-          <p className="mt-0.5 text-sm text-ink-tertiary">Admin access</p>
-
-          {error && (
-            <div className="mt-5 py-3 px-4 bg-danger-subtle text-danger text-sm rounded-lg">
-              {error}
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-ink-secondary mb-1.5"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-surface-raised border rounded-lg text-ink placeholder:text-ink-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-ink-secondary mb-1.5"
-              >
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-surface-raised border rounded-lg text-ink placeholder:text-ink-tertiary focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-colors"
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="btn-primary w-full py-2.5 bg-accent text-surface-raised font-semibold rounded-lg disabled:opacity-50"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
+      <div className="relative z-10 w-full max-w-sm">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/profile/logo.svg" alt="Logo" className="h-8 w-auto opacity-80" />
         </div>
+
+        <Card className="border-white/10 bg-white/95 backdrop-blur-xl shadow-2xl">
+          <CardHeader className="pb-2 pt-6 px-6">
+            <h1 className="text-xl font-bold text-foreground">Sign in</h1>
+            <p className="text-sm text-muted-foreground">
+              Admin dashboard access
+            </p>
+          </CardHeader>
+          <CardContent className="px-6 pb-6">
+            {error && (
+              <div className="mb-4 py-2.5 px-3 bg-destructive/10 text-destructive text-sm rounded-lg">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@company.com"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter password"
+                />
+              </div>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full font-semibold"
+              >
+                {loading ? "Signing in..." : "Sign in"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </main>
   );

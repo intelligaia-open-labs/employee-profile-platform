@@ -4,16 +4,13 @@
 
 @layer base {
   :root {
-    /* Core palette — neutrals tinted toward ink-blue (hue 260) */
+    /* Core palette */
     --ink: oklch(0.22 0.03 260);
     --ink-secondary: oklch(0.45 0.02 260);
     --ink-tertiary: oklch(0.60 0.015 260);
     --surface: oklch(0.98 0.004 260);
     --surface-raised: oklch(0.995 0.002 260);
-    --border: oklch(0.91 0.008 260);
     --border-strong: oklch(0.84 0.012 260);
-    --accent: oklch(0.32 0.10 260);
-    --accent-hover: oklch(0.27 0.08 260);
     --accent-subtle: oklch(0.95 0.015 260);
     --success: oklch(0.55 0.15 150);
     --danger: oklch(0.55 0.15 25);
@@ -29,15 +26,38 @@
     /* Embossed button */
     --shadow-btn: 0 1px 3px oklch(0.18 0.04 260 / 0.15), inset 0 1px 0 oklch(0.42 0.06 260);
     --shadow-btn-hover: 0 8px 24px oklch(0.15 0.04 260 / 0.25), inset 0 1px 0 oklch(0.38 0.05 260);
+
+    /* shadcn tokens */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 12%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 64%;
+    --radius: 0.625rem;
   }
 
   *,
   *::before,
   *::after {
-    border-color: var(--border);
+    @apply border-border;
   }
 
   body {
+    @apply bg-background text-foreground;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   }
 }
