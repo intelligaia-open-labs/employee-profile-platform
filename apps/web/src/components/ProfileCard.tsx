@@ -23,46 +23,35 @@ export function ProfileCard({ employee }: Props) {
   const [qrLoaded, setQrLoaded] = useState(false);
 
   /** Add to contact — platform-aware approach */
-  async function handleAddToContact() {
+  function handleAddToContact() {
     const vcardUrl = `${API_URL}/public/vcard/${employee.slug}`;
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-    // iOS: direct navigation — Safari's built-in vCard handler opens Contacts
-    if (isIOS) {
+    // Mobile (iOS + Android): direct navigation to vCard URL
+    // iOS Safari: opens Contacts app directly
+    // Android Chrome: downloads .vcf, tapping notification opens Contacts
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (isMobile) {
       window.location.href = vcardUrl;
       return;
     }
 
-    // Android + Desktop: fetch and share/download
-    try {
-      const res = await fetch(vcardUrl);
-      const vcfText = await res.text();
-
-      const file = new File([vcfText], `${employee.full_name}.vcf`, {
-        type: "text/vcard",
+    // Desktop: fetch and download as file
+    fetch(vcardUrl)
+      .then((res) => res.text())
+      .then((vcfText) => {
+        const blob = new Blob([vcfText], { type: "text/vcard" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${employee.full_name}.vcf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      })
+      .catch(() => {
+        window.location.href = vcardUrl;
       });
-
-      // Android: navigator.share opens share sheet → pick Contacts
-      if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: employee.full_name });
-        return;
-      }
-
-      // Desktop: blob download
-      const blob = new Blob([vcfText], { type: "text/vcard" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${employee.full_name}.vcf`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    } catch (err) {
-      if (err instanceof Error && err.name === "AbortError") return;
-      // Final fallback: direct navigation
-      window.location.href = vcardUrl;
-    }
   }
 
   // Use phone_numbers if available, fall back to legacy phone field

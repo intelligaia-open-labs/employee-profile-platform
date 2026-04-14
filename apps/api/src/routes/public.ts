@@ -108,7 +108,7 @@ publicRouter.get("/vcard/:slug", async (req: Request, res: Response, next: NextF
       social_links: employee.social_links,
     });
 
-    res.setHeader("Content-Type", "text/x-vcard; charset=utf-8");
+    res.setHeader("Content-Type", "text/vcard; charset=utf-8");
     res.setHeader("Content-Disposition", `inline; filename="${employee.slug}.vcf"`);
     res.send(vcf);
   } catch (err) {
