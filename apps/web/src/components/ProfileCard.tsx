@@ -20,6 +20,41 @@ export function ProfileCard({ employee }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
 
+  /** Fetch vCard and open via native share (Android) or blob (iOS/desktop) */
+  async function handleAddToContact() {
+    try {
+      const res = await fetch(`${API_URL}/public/vcard/${employee.slug}`);
+      const vcfText = await res.text();
+
+      const file = new File([vcfText], `${employee.full_name}.vcf`, {
+        type: "text/vcard",
+      });
+
+      // Android: navigator.share with file opens share sheet → Contacts
+      if (typeof navigator.share === "function" && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: employee.full_name,
+        });
+        return;
+      }
+
+      // iOS / Desktop: blob URL triggers native vCard handler
+      const blob = new Blob([vcfText], { type: "text/vcard" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${employee.full_name}.vcf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      if (err instanceof Error && err.name === "AbortError") return;
+      window.open(`${API_URL}/public/vcard/${employee.slug}`, "_blank");
+    }
+  }
+
   // Use phone_numbers if available, fall back to legacy phone field
   const primaryPhone =
     employee.phone_numbers?.find((p) => p.is_primary) ??
@@ -189,8 +224,8 @@ export function ProfileCard({ employee }: Props) {
                 />
               </a>
               {/* Add to Contact */}
-              <a
-                href={`${API_URL}/public/vcard/${employee.slug}`}
+              <button
+                onClick={handleAddToContact}
                 className="w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center overflow-hidden hover:opacity-90 transition-opacity"
               >
                 <svg
@@ -206,7 +241,7 @@ export function ProfileCard({ employee }: Props) {
                     d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
                   />
                 </svg>
-              </a>
+              </button>
             </div>
           </div>
 
@@ -251,15 +286,15 @@ export function ProfileCard({ employee }: Props) {
                   </a>
                 ))}
                 </div>
-                <a
-                  href={`${API_URL}/public/vcard/${employee.slug}`}
+                <button
+                  onClick={handleAddToContact}
                   className="inline-flex gap-[10.732px] items-center justify-center bg-[#121212] text-white text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors shrink-0 self-end"
                 >
                   <svg className="w-[12px] h-[12px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
                   </svg>
                   Add to Contact
-                </a>
+                </button>
               </div>
 
               {/* Email */}
@@ -579,12 +614,12 @@ export function ProfileCard({ employee }: Props) {
               }}
             />
             <div className="flex gap-2 mt-5">
-              <a
-                href={`${API_URL}/public/vcard/${employee.slug}`}
+              <button
+                onClick={() => { setQrOpen(false); handleAddToContact(); }}
                 className="flex-1 bg-[#121212] text-white text-[12px] font-medium py-2.5 rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
               >
                 Save Contact
-              </a>
+              </button>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
