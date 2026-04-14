@@ -12,6 +12,10 @@ const employeeInclude = {
   social_links: {
     select: { id: true, platform: true, url: true },
   },
+  phone_numbers: {
+    select: { id: true, country_code: true, number: true, label: true, is_primary: true },
+    orderBy: { is_primary: "desc" as const },
+  },
   qr_code: {
     select: { id: true, qr_url: true, scan_count: true },
   },
@@ -45,7 +49,7 @@ async function deleteFile(filePath: string) {
 
 export async function createEmployee(data: CreateEmployeeInput, profileImage?: string) {
   const slug = generateSlug(data.full_name);
-  const { social_links, linkedin_url, website_url, ...rest } = data;
+  const { social_links, phone_numbers, linkedin_url, website_url, ...rest } = data;
 
   const employee = await prisma.employee.create({
     data: {
@@ -56,6 +60,9 @@ export async function createEmployee(data: CreateEmployeeInput, profileImage?: s
       profile_image: profileImage || null,
       social_links: social_links?.length
         ? { create: social_links }
+        : undefined,
+      phone_numbers: phone_numbers?.length
+        ? { create: phone_numbers }
         : undefined,
     },
     include: employeeInclude,
@@ -121,7 +128,7 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
     throw new AppError(404, "Employee not found");
   }
 
-  const { social_links, linkedin_url, website_url, ...rest } = data;
+  const { social_links, phone_numbers, linkedin_url, website_url, ...rest } = data;
 
   const updateData: Record<string, unknown> = { ...rest };
   if (linkedin_url !== undefined) {
@@ -142,6 +149,15 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
     if (social_links.length > 0) {
       await prisma.socialLink.createMany({
         data: social_links.map((sl) => ({ ...sl, employee_id: id })),
+      });
+    }
+  }
+
+  if (phone_numbers) {
+    await prisma.phoneNumber.deleteMany({ where: { employee_id: id } });
+    if (phone_numbers.length > 0) {
+      await prisma.phoneNumber.createMany({
+        data: phone_numbers.map((pn) => ({ ...pn, employee_id: id })),
       });
     }
   }

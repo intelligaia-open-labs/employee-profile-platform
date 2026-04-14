@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { countryCodes } from "@/lib/country-codes";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -21,6 +22,13 @@ interface Props {
 interface SocialLinkInput {
   platform: string;
   url: string;
+}
+
+interface PhoneNumberInput {
+  country_code: string;
+  number: string;
+  label: string;
+  is_primary: boolean;
 }
 
 export function EmployeeForm({ employee }: Props) {
@@ -43,6 +51,15 @@ export function EmployeeForm({ employee }: Props) {
       platform: s.platform,
       url: s.url,
     })) ?? [],
+  );
+
+  const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberInput[]>(
+    employee?.phone_numbers?.map((p) => ({
+      country_code: p.country_code,
+      number: p.number,
+      label: p.label ?? "",
+      is_primary: p.is_primary,
+    })) ?? [{ country_code: "+1", number: "", label: "", is_primary: true }],
   );
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -81,6 +98,39 @@ export function EmployeeForm({ employee }: Props) {
     setSocialLinks((prev) => prev.filter((_, i) => i !== index));
   }
 
+  function addPhoneNumber() {
+    setPhoneNumbers((prev) => [
+      ...prev,
+      { country_code: "+1", number: "", label: "", is_primary: false },
+    ]);
+  }
+
+  function updatePhoneNumber(
+    index: number,
+    field: keyof PhoneNumberInput,
+    value: string | boolean,
+  ) {
+    setPhoneNumbers((prev) =>
+      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)),
+    );
+  }
+
+  function removePhoneNumber(index: number) {
+    setPhoneNumbers((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      if (next.length > 0 && !next.some((p) => p.is_primary)) {
+        next[0].is_primary = true;
+      }
+      return next;
+    });
+  }
+
+  function setPrimaryPhone(index: number) {
+    setPhoneNumbers((prev) =>
+      prev.map((p, i) => ({ ...p, is_primary: i === index })),
+    );
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError("");
@@ -95,6 +145,11 @@ export function EmployeeForm({ employee }: Props) {
       const validLinks = socialLinks.filter((s) => s.platform && s.url);
       if (validLinks.length > 0) {
         fd.append("social_links", JSON.stringify(validLinks));
+      }
+
+      const validPhones = phoneNumbers.filter((p) => p.number);
+      if (validPhones.length > 0) {
+        fd.append("phone_numbers", JSON.stringify(validPhones));
       }
 
       if (imageFile) {
@@ -235,16 +290,89 @@ export function EmployeeForm({ employee }: Props) {
                 onChange={(e) => handleChange("email", e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone *</Label>
-              <Input
-                id="phone"
-                required
-                value={form.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-              />
+          </div>
+
+          {/* Phone Numbers */}
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <Label>Phone Numbers *</Label>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={addPhoneNumber}
+                className="text-primary"
+              >
+                <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Number
+              </Button>
+            </div>
+            <div className="space-y-3">
+              {phoneNumbers.map((pn, i) => (
+                <div key={i} className="flex gap-2 items-start">
+                  {/* Country code */}
+                  <select
+                    value={pn.country_code}
+                    onChange={(e) => updatePhoneNumber(i, "country_code", e.target.value)}
+                    className="flex h-9 w-[100px] shrink-0 rounded-md border border-input bg-transparent px-2 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  >
+                    {countryCodes.map((cc) => (
+                      <option key={`${cc.code}-${cc.country}`} value={cc.code}>
+                        {cc.code} {cc.country}
+                      </option>
+                    ))}
+                  </select>
+                  {/* Number */}
+                  <Input
+                    placeholder="Phone number"
+                    required={i === 0}
+                    value={pn.number}
+                    onChange={(e) => updatePhoneNumber(i, "number", e.target.value)}
+                    className="flex-1"
+                  />
+                  {/* Label */}
+                  <Input
+                    placeholder="Label (e.g. Work)"
+                    value={pn.label}
+                    onChange={(e) => updatePhoneNumber(i, "label", e.target.value)}
+                    className="w-[120px] shrink-0"
+                  />
+                  {/* Primary toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setPrimaryPhone(i)}
+                    title={pn.is_primary ? "Primary number" : "Set as primary"}
+                    className={`shrink-0 w-9 h-9 rounded-md flex items-center justify-center transition-colors ${
+                      pn.is_primary
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-input text-muted-foreground hover:bg-accent"
+                    }`}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </button>
+                  {/* Remove */}
+                  {phoneNumbers.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removePhoneNumber(i)}
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Button>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
+
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Input

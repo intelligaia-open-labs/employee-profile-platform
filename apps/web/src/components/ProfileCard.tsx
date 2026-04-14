@@ -14,7 +14,19 @@ interface Props {
 
 export function ProfileCard({ employee }: Props) {
   const [meetingOpen, setMeetingOpen] = useState(false);
-  const phoneDigits = employee.phone.replace(/[^0-9]/g, "");
+
+  // Use phone_numbers if available, fall back to legacy phone field
+  const primaryPhone =
+    employee.phone_numbers?.find((p) => p.is_primary) ??
+    employee.phone_numbers?.[0];
+  const displayPhone = primaryPhone
+    ? `${primaryPhone.country_code} ${primaryPhone.number}`
+    : employee.phone;
+  const phoneDigits = (primaryPhone?.number ?? employee.phone).replace(/[^0-9]/g, "");
+  const allPhones =
+    employee.phone_numbers?.length > 0
+      ? employee.phone_numbers
+      : [{ country_code: "", number: employee.phone, label: null, is_primary: true, id: "legacy" }];
 
   const telegramLinks = employee.social_links.filter(
     (s) => s.platform.toLowerCase() === "telegram",
@@ -140,7 +152,7 @@ export function ProfileCard({ employee }: Props) {
             <div className="flex gap-[6px] items-center">
               {/* Phone */}
               <a
-                href={`tel:${employee.phone}`}
+                href={`tel:${displayPhone}`}
                 className="w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center overflow-hidden hover:opacity-90 transition-opacity"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -152,7 +164,7 @@ export function ProfileCard({ employee }: Props) {
               </a>
               {/* Call */}
               <a
-                href={`tel:${employee.phone}`}
+                href={`tel:${displayPhone}`}
                 className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -211,14 +223,25 @@ export function ProfileCard({ employee }: Props) {
               {/* Divider */}
               <div className="w-full h-px bg-[#e5e5e5]" />
 
-              {/* Phone */}
+              {/* Phone Numbers */}
               <div className="flex flex-col w-full">
                 <p className="text-[12px] font-normal text-[#727272] leading-[18px]">
-                  Phone
+                  Contact Us
                 </p>
-                <p className="text-[14px] font-medium text-[#121212] leading-[20px]">
-                  {employee.phone}
-                </p>
+                {allPhones.map((pn) => (
+                  <a
+                    key={pn.id}
+                    href={`tel:${pn.country_code}${pn.number}`}
+                    className="text-[14px] font-medium text-[#121212] leading-[20px] hover:underline"
+                  >
+                    {pn.country_code} {pn.number}
+                    {pn.label && (
+                      <span className="text-[12px] font-normal text-[#727272]">
+                        {" "}({pn.label})
+                      </span>
+                    )}
+                  </a>
+                ))}
               </div>
 
               {/* Email */}

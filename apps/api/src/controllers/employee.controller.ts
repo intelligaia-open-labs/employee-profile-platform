@@ -14,6 +14,13 @@ export async function create(req: Request, res: Response, next: NextFunction): P
         body = { ...body, social_links: [] };
       }
     }
+    if (typeof body.phone_numbers === "string") {
+      try {
+        body = { ...body, phone_numbers: JSON.parse(body.phone_numbers) };
+      } catch {
+        body = { ...body, phone_numbers: [] };
+      }
+    }
 
     const employee = await employeeService.createEmployee(body, profileImage);
     res.status(201).json({ success: true, data: employee });
@@ -68,6 +75,13 @@ export async function update(req: Request, res: Response, next: NextFunction): P
         body = { ...body, social_links: JSON.parse(body.social_links) };
       } catch {
         body = { ...body, social_links: [] };
+      }
+    }
+    if (typeof body.phone_numbers === "string") {
+      try {
+        body = { ...body, phone_numbers: JSON.parse(body.phone_numbers) };
+      } catch {
+        body = { ...body, phone_numbers: [] };
       }
     }
 

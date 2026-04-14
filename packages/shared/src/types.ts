@@ -12,7 +12,16 @@ export interface EmployeePublic {
   address: string | null;
   is_active: boolean;
   social_links: SocialLinkPublic[];
+  phone_numbers: PhoneNumberPublic[];
   qr_code: QRCodePublic | null;
+}
+
+export interface PhoneNumberPublic {
+  id: string;
+  country_code: string;
+  number: string;
+  label: string | null;
+  is_primary: boolean;
 }
 
 export interface SocialLinkPublic {

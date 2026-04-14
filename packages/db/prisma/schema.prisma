@@ -35,12 +35,27 @@ model Employee {
   updated_at    DateTime @updatedAt
 
   social_links     SocialLink[]
+  phone_numbers    PhoneNumber[]
   qr_code          QRCode?
   meeting_requests MeetingRequest[]
 
   @@index([slug])
   @@index([is_active])
   @@map("employees")
+}
+
+model PhoneNumber {
+  id           String   @id @default(uuid()) @db.Uuid
+  employee_id  String   @db.Uuid
+  country_code String
+  number       String
+  label        String?
+  is_primary   Boolean  @default(false)
+  created_at   DateTime @default(now())
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@map("phone_numbers")
 }
 
 model SocialLink {
