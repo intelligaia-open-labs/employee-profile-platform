@@ -14,6 +14,9 @@ import { meetingRouter } from "./routes/meetings";
 
 const app = express();
 
+// Trust proxy (behind nginx)
+app.set("trust proxy", 1);
+
 // Security
 app.use(helmet());
 app.use(cors({

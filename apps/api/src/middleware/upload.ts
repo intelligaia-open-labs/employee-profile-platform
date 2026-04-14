@@ -31,7 +31,7 @@ function createUpload() {
         },
       }),
       fileFilter,
-      limits: { fileSize: 5 * 1024 * 1024 },
+      limits: { fileSize: 10 * 1024 * 1024 },
     });
   }
 
@@ -45,7 +45,7 @@ function createUpload() {
     },
   });
 
-  return multer({ storage, fileFilter, limits: { fileSize: 5 * 1024 * 1024 } });
+  return multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } });
 }
 
 export const upload = createUpload();
