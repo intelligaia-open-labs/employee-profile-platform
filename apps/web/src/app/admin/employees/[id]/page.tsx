@@ -79,7 +79,7 @@ export default function EditEmployeePage({
             <CardContent>
               <div className="flex items-center gap-6">
                 <Image
-                  src={{resolveImageUrl(employee.qr_code.qr_url)!}}
+                  src={resolveImageUrl(employee.qr_code.qr_url)!}
                   alt="QR Code"
                   width={120}
                   height={120}
@@ -99,7 +99,7 @@ export default function EditEmployeePage({
                   </p>
                   <Button asChild size="sm" className="mt-3">
                     <a
-                      href={{resolveImageUrl(employee.qr_code.qr_url)!}}
+                      href={resolveImageUrl(employee.qr_code.qr_url)!}
                       download={`${employee.slug}-qr.png`}
                     >
                       Download QR
