@@ -44,14 +44,22 @@ export default async function ProfilePage({ params }: Props) {
   return (
     <ProfileReveal>
       <main className="relative min-h-screen">
-        {/* Fixed background — works on mobile unlike background-attachment: fixed */}
+        {/* Fixed background — mobile version (tall) */}
         <div
-          className="fixed inset-0 z-0"
+          className="fixed inset-0 z-0 md:hidden"
           style={{
             backgroundImage: "url(/profile/bg-mobile.png)",
             backgroundSize: "cover",
             backgroundPosition: "center top",
-            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Fixed background — desktop version (wide) */}
+        <div
+          className="fixed inset-0 z-0 hidden md:block"
+          style={{
+            backgroundImage: "url(/profile/bg.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center center",
           }}
         />
         <div className="relative z-10 flex items-start justify-center px-0 md:px-4 py-0 md:py-8 lg:py-12">
