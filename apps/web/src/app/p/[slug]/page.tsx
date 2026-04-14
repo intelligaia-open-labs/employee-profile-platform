@@ -65,7 +65,7 @@ export default async function ProfilePage({ params }: Props) {
 
         {/* Centered card — same layout for mobile and desktop */}
         <div className="relative z-10 flex justify-center">
-          <div className="w-full max-w-[560px]">
+          <div className="w-full max-w-md md:max-w-[720px]">
             <ProfileCard employee={employee} />
           </div>
         </div>

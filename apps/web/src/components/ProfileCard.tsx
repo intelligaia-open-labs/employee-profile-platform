@@ -93,7 +93,7 @@ export function ProfileCard({ employee }: Props) {
 
   return (
     <div
-      className="relative w-full max-w-md mx-auto min-h-screen pb-[90px] pt-[36px] px-[16px]"
+      className="relative w-full mx-auto min-h-screen pb-[90px] pt-[36px] px-[16px]"
     >
       {/* Content */}
       <div className="relative flex flex-col gap-[58px] items-start w-full">
