@@ -17,6 +17,7 @@ const VISIBLE_SOCIAL_COUNT = 4;
 export function ProfileCard({ employee }: Props) {
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [showAllSocial, setShowAllSocial] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   // Use phone_numbers if available, fall back to legacy phone field
   const primaryPhone =
@@ -436,6 +437,99 @@ export function ProfileCard({ employee }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Fixed Share/QR FAB — bottom left */}
+      <div className="fixed bottom-[20px] left-[20px] z-50">
+        {shareOpen && (
+          <div className="absolute bottom-[52px] left-0 bg-white rounded-2xl shadow-xl border border-[#e5e5e5] p-3 w-[200px] animate-slide-up">
+            <p className="text-[11px] font-semibold text-[#727272] uppercase tracking-wider mb-2 px-1">
+              Share Profile
+            </p>
+
+            {/* Copy Link */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setShareOpen(false);
+              }}
+              className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors text-left"
+            >
+              <svg className="w-5 h-5 text-[#121212] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9.75a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" />
+              </svg>
+              <span className="text-[13px] font-medium text-[#121212]">Copy Link</span>
+            </button>
+
+            {/* Share via WhatsApp */}
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(employee.full_name + " - " + window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
+              onClick={() => setShareOpen(false)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/profile/icon-whatsapp.svg" alt="" className="w-5 h-5 rounded-full shrink-0" />
+              <span className="text-[13px] font-medium text-[#121212]">WhatsApp</span>
+            </a>
+
+            {/* Share via Email */}
+            <a
+              href={`mailto:?subject=${encodeURIComponent(employee.full_name + "'s Profile")}&body=${encodeURIComponent(window.location.href)}`}
+              className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
+              onClick={() => setShareOpen(false)}
+            >
+              <svg className="w-5 h-5 text-[#121212] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <span className="text-[13px] font-medium text-[#121212]">Email</span>
+            </a>
+
+            {/* Share via LinkedIn */}
+            <a
+              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
+              onClick={() => setShareOpen(false)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/profile/icon-linkedin.svg" alt="" className="w-5 h-5 rounded-full shrink-0" />
+              <span className="text-[13px] font-medium text-[#121212]">LinkedIn</span>
+            </a>
+
+            {/* QR Code */}
+            <a
+              href={`${API_URL}/public/vcard/${employee.slug}`}
+              className="flex items-center gap-3 w-full px-2 py-2.5 rounded-xl hover:bg-[#f5f5f5] transition-colors"
+              onClick={() => setShareOpen(false)}
+            >
+              <svg className="w-5 h-5 text-[#121212] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 013.75 9.375v-4.5zM3.75 14.625c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5a1.125 1.125 0 01-1.125-1.125v-4.5zM13.5 4.875c0-.621.504-1.125 1.125-1.125h4.5c.621 0 1.125.504 1.125 1.125v4.5c0 .621-.504 1.125-1.125 1.125h-4.5A1.125 1.125 0 0113.5 9.375v-4.5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 14.625v2.25m0 2.25h2.25m2.25 0h-2.25m0 0v-2.25m0 0h2.25" />
+              </svg>
+              <span className="text-[13px] font-medium text-[#121212]">Save Contact</span>
+            </a>
+          </div>
+        )}
+
+        <button
+          onClick={() => setShareOpen(!shareOpen)}
+          className="w-[46px] h-[46px] rounded-full bg-[#121212] text-white shadow-lg flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
+        >
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Backdrop to close share menu */}
+      {shareOpen && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setShareOpen(false)}
+        />
+      )}
 
       {/* Fixed Schedule a Meeting FAB — sticks to bottom of viewport */}
       <button

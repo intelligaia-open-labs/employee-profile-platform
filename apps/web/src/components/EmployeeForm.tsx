@@ -74,7 +74,15 @@ export function EmployeeForm({ employee }: Props) {
     buildInitialProfiles,
   );
 
-  const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>([]);
+  // Custom links — social_links that don't match any predefined platform
+  const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>(() => {
+    const predefinedKeys = SOCIAL_PLATFORMS.map((p) => p.label.toLowerCase());
+    return (
+      employee?.social_links
+        ?.filter((s) => !predefinedKeys.includes(s.platform.toLowerCase()))
+        .map((s) => ({ platform: s.platform, url: s.url })) ?? []
+    );
+  });
 
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberInput[]>(
     employee?.phone_numbers?.map((p) => ({
@@ -179,8 +187,13 @@ export function EmployeeForm({ employee }: Props) {
           const platform = SOCIAL_PLATFORMS.find((p) => p.key === key);
           return { platform: platform?.label ?? key, url };
         });
-      if (socialLinksFromProfiles.length > 0) {
-        fd.append("social_links", JSON.stringify(socialLinksFromProfiles));
+
+      // Add custom links
+      const customLinks = socialLinks.filter((s) => s.platform && s.url);
+      const allLinks = [...socialLinksFromProfiles, ...customLinks];
+
+      if (allLinks.length > 0) {
+        fd.append("social_links", JSON.stringify(allLinks));
       }
 
       const validPhones = phoneNumbers.filter((p) => p.number);
@@ -474,6 +487,60 @@ export function EmployeeForm({ employee }: Props) {
               )}
             </div>
           ))}
+
+          {/* Custom Links */}
+          {socialLinks.length > 0 && (
+            <>
+              <Separator />
+              <div className="space-y-3">
+                {socialLinks.map((link, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-8 h-8 shrink-0 rounded-full bg-muted flex items-center justify-center">
+                      <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0 grid grid-cols-[1fr_2fr] gap-2">
+                      <Input
+                        placeholder="Label"
+                        value={link.platform}
+                        onChange={(e) => updateSocialLink(i, "platform", e.target.value)}
+                      />
+                      <Input
+                        placeholder="https://..."
+                        value={link.url}
+                        onChange={(e) => updateSocialLink(i, "url", e.target.value)}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeSocialLink(i)}
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={addSocialLink}
+            className="w-full"
+          >
+            <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Add Custom Link
+          </Button>
         </CardContent>
       </Card>
 
