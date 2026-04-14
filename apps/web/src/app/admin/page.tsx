@@ -38,7 +38,7 @@ function nameHue(name: string): number {
   return Math.abs(hash) % 360;
 }
 
-type Tab = "employees" | "meetings" | "credentials";
+type Tab = "employees" | "meetings" | "credentials" | "analytics";
 type StatusFilter = "all" | "active" | "inactive";
 type MeetingFilter = "all" | "pending" | "confirmed" | "declined";
 
@@ -56,6 +56,18 @@ interface MeetingRequestData {
 
 interface CredentialWithEmployee extends EmployeeCredentialPublic {
   employee: { id: string; full_name: string; designation: string; profile_image: string | null };
+}
+
+interface AnalyticsData {
+  overview: { totalViews: number; todayViews: number; weekViews: number; monthViews: number; uniqueVisitors: number };
+  byEmployee: { employee: { full_name: string; slug: string; designation: string; profile_image: string | null }; views: number }[];
+  devices: { device: string; count: number }[];
+  browsers: { browser: string; count: number }[];
+  os: { os: string; count: number }[];
+  sources: { source: string; count: number }[];
+  countries: { country: string; count: number }[];
+  daily: { date: string; count: number }[];
+  recent: { id: string; device_type: string; browser: string; os: string; country: string | null; city: string | null; source: string; referrer: string | null; created_at: string; employee: { full_name: string; slug: string } }[];
 }
 
 const ROLE_COLORS: Record<string, string> = {
@@ -102,6 +114,8 @@ export default function AdminDashboard() {
   });
   const [credSaving, setCredSaving] = useState(false);
   const [credDeleteTarget, setCredDeleteTarget] = useState<string | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -127,6 +141,15 @@ export default function AdminDashboard() {
       const res = await clientApiFetch<{ data: CredentialWithEmployee[] }>("/credentials");
       setCredentials(res.data || []);
     } catch { /* silent */ }
+  }, []);
+
+  const fetchAnalytics = useCallback(async () => {
+    setAnalyticsLoading(true);
+    try {
+      const res = await clientApiFetch<{ data: AnalyticsData }>("/analytics");
+      setAnalytics(res.data);
+    } catch { /* silent */ }
+    finally { setAnalyticsLoading(false); }
   }, []);
 
   useEffect(() => {
@@ -421,10 +444,10 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <div className="flex items-center gap-1 mb-6 border-b">
-          {(["employees", "meetings", "credentials"] as Tab[]).map((tab) => (
+          {(["employees", "meetings", "credentials", "analytics"] as Tab[]).map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => { setActiveTab(tab); if (tab === "analytics" && !analytics) fetchAnalytics(); }}
               className={`px-4 py-2.5 text-sm font-medium capitalize transition-colors relative ${
                 activeTab === tab
                   ? "text-foreground"
@@ -847,6 +870,278 @@ export default function AdminDashboard() {
                     })}
                   </TableBody>
                 </Table>
+              </Card>
+            )}
+          </>
+        )}
+
+        {/* ═══════════ ANALYTICS TAB ═══════════ */}
+        {activeTab === "analytics" && (
+          <>
+            {analyticsLoading ? (
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
+                {[1,2,3,4,5].map(i => <Card key={i}><CardContent className="py-6"><Skeleton className="h-8 w-16 mb-2" /><Skeleton className="h-4 w-24" /></CardContent></Card>)}
+              </div>
+            ) : analytics ? (
+              <div className="space-y-6">
+                {/* Overview Stats */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+                  <Card>
+                    <CardContent className="pt-5 pb-4">
+                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.totalViews}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total Views</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-5 pb-4">
+                      <p className="text-3xl font-bold tabular-nums text-green-600">{analytics.overview.todayViews}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Today</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-5 pb-4">
+                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.weekViews}</p>
+                      <p className="text-xs text-muted-foreground mt-1">This Week</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-5 pb-4">
+                      <p className="text-3xl font-bold tabular-nums">{analytics.overview.monthViews}</p>
+                      <p className="text-xs text-muted-foreground mt-1">This Month</p>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardContent className="pt-5 pb-4">
+                      <p className="text-3xl font-bold tabular-nums text-blue-600">{analytics.overview.uniqueVisitors}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Unique Visitors</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Daily Views Sparkline */}
+                {analytics.daily.length > 0 && (
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Daily Views (Last 30 Days)</CardTitle></CardHeader>
+                    <CardContent>
+                      <div className="flex items-end gap-[2px] h-[100px]">
+                        {(() => {
+                          const max = Math.max(...analytics.daily.map(d => d.count), 1);
+                          return analytics.daily.map((d) => (
+                            <div
+                              key={d.date}
+                              className="flex-1 bg-foreground/80 rounded-t-sm hover:bg-foreground transition-colors group relative"
+                              style={{ height: `${Math.max((d.count / max) * 100, 2)}%` }}
+                              title={`${d.date}: ${d.count} views`}
+                            >
+                              <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                {d.count}
+                              </div>
+                            </div>
+                          ));
+                        })()}
+                      </div>
+                      <div className="flex justify-between mt-2 text-[10px] text-muted-foreground">
+                        <span>{analytics.daily[0]?.date}</span>
+                        <span>{analytics.daily[analytics.daily.length - 1]?.date}</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Breakdowns Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Views by Employee */}
+                  <Card className="sm:col-span-2 lg:col-span-1">
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Top Profiles</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.byEmployee.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No data yet</p>
+                      ) : (
+                        <div className="space-y-3">
+                          {analytics.byEmployee.slice(0, 8).map((item) => {
+                            const max = analytics.byEmployee[0]?.views || 1;
+                            return (
+                              <div key={item.employee.slug} className="flex items-center gap-3">
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">{item.employee.full_name}</p>
+                                  <div className="mt-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                                    <div className="h-full bg-foreground rounded-full" style={{ width: `${(item.views / max) * 100}%` }} />
+                                  </div>
+                                </div>
+                                <span className="text-sm font-semibold tabular-nums shrink-0">{item.views}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Device Breakdown */}
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Devices</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.devices.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No data yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {analytics.devices.map((d) => {
+                            const total = analytics.devices.reduce((s, x) => s + x.count, 0);
+                            const pct = total > 0 ? Math.round((d.count / total) * 100) : 0;
+                            return (
+                              <div key={d.device} className="flex items-center justify-between text-sm">
+                                <div className="flex items-center gap-2">
+                                  <span className="capitalize">{d.device}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground">{pct}%</span>
+                                  <span className="font-semibold tabular-nums w-8 text-right">{d.count}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Traffic Sources */}
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Traffic Sources</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.sources.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No data yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {analytics.sources.map((s) => {
+                            const total = analytics.sources.reduce((sum, x) => sum + x.count, 0);
+                            const pct = total > 0 ? Math.round((s.count / total) * 100) : 0;
+                            return (
+                              <div key={s.source} className="flex items-center justify-between text-sm">
+                                <span className="capitalize">{s.source}</span>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-muted-foreground">{pct}%</span>
+                                  <span className="font-semibold tabular-nums w-8 text-right">{s.count}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Browsers */}
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Browsers</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.browsers.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No data yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {analytics.browsers.slice(0, 6).map((b) => (
+                            <div key={b.browser} className="flex items-center justify-between text-sm">
+                              <span>{b.browser}</span>
+                              <span className="font-semibold tabular-nums">{b.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* OS */}
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Operating Systems</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.os.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No data yet</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {analytics.os.slice(0, 6).map((o) => (
+                            <div key={o.os} className="flex items-center justify-between text-sm">
+                              <span>{o.os}</span>
+                              <span className="font-semibold tabular-nums">{o.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* Countries */}
+                  <Card>
+                    <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Countries</CardTitle></CardHeader>
+                    <CardContent>
+                      {analytics.countries.length === 0 ? (
+                        <p className="text-sm text-muted-foreground">No country data (requires Cloudflare)</p>
+                      ) : (
+                        <div className="space-y-2">
+                          {analytics.countries.slice(0, 8).map((c) => (
+                            <div key={c.country} className="flex items-center justify-between text-sm">
+                              <span>{c.country}</span>
+                              <span className="font-semibold tabular-nums">{c.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Recent Views */}
+                <Card>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Recent Visits</CardTitle></CardHeader>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Profile</TableHead>
+                        <TableHead>Device</TableHead>
+                        <TableHead className="hidden sm:table-cell">Browser / OS</TableHead>
+                        <TableHead>Source</TableHead>
+                        <TableHead className="hidden md:table-cell">Location</TableHead>
+                        <TableHead className="text-right">Time</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {analytics.recent.map((v) => (
+                        <TableRow key={v.id}>
+                          <TableCell className="text-sm font-medium">{v.employee.full_name}</TableCell>
+                          <TableCell>
+                            <Badge variant="secondary" className="text-[10px] capitalize">{v.device_type}</Badge>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-xs text-muted-foreground">
+                            {v.browser} / {v.os}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-[10px] capitalize">{v.source}</Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell text-xs text-muted-foreground">
+                            {[v.city, v.country].filter(Boolean).join(", ") || "—"}
+                          </TableCell>
+                          <TableCell className="text-right text-xs text-muted-foreground">
+                            {new Date(v.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Card>
+
+                {/* Refresh */}
+                <div className="flex justify-end">
+                  <Button variant="outline" size="sm" onClick={fetchAnalytics} disabled={analyticsLoading}>
+                    <svg className="w-4 h-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
+                    Refresh
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <p className="font-medium">No analytics data yet</p>
+                  <p className="text-sm text-muted-foreground mt-1">Analytics will appear once visitors start viewing employee profiles.</p>
+                </CardContent>
               </Card>
             )}
           </>

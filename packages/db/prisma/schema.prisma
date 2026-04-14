@@ -39,6 +39,7 @@ model Employee {
   qr_code          QRCode?
   meeting_requests MeetingRequest[]
   credential       EmployeeCredential?
+  profile_views    ProfileView[]
 
   @@index([slug])
   @@index([is_active])
@@ -99,6 +100,29 @@ model EmployeeCredential {
 
   @@index([email])
   @@map("employee_credentials")
+}
+
+model ProfileView {
+  id           String   @id @default(uuid()) @db.Uuid
+  employee_id  String   @db.Uuid
+  visitor_ip   String?
+  user_agent   String?
+  device_type  String?
+  browser      String?
+  os           String?
+  country      String?
+  city         String?
+  referrer     String?
+  source       String   @default("direct")
+  created_at   DateTime @default(now())
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([employee_id])
+  @@index([created_at])
+  @@index([device_type])
+  @@index([source])
+  @@map("profile_views")
 }
 
 model MeetingRequest {

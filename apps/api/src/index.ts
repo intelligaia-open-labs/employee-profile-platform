@@ -13,6 +13,7 @@ import { publicRouter } from "./routes/public";
 import { meetingRouter } from "./routes/meetings";
 import { credentialRouter } from "./routes/credentials";
 import { employeePortalRouter } from "./routes/employee-portal";
+import { analyticsRouter } from "./routes/analytics";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/public", publicRouter);
 app.use("/meeting-requests", meetingRouter);
 app.use("/credentials", credentialRouter);
 app.use("/portal", employeePortalRouter);
+app.use("/analytics", analyticsRouter);
 
 // Health check
 app.get("/health", (_req, res) => {

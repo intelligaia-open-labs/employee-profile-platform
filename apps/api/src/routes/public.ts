@@ -3,6 +3,7 @@ import { getEmployeeBySlug, incrementScanCount, resolveEmployeeUrls } from "../s
 import { generateVCard } from "../utils/vcard";
 import { AppError } from "../middleware/error";
 import { prisma } from "@business-profile/db";
+import { trackProfileView } from "../utils/analytics";
 
 export const publicRouter = Router();
 
@@ -15,7 +16,8 @@ publicRouter.get("/profile/:slug", async (req: Request, res: Response, next: Nex
       throw new AppError(404, "Profile not found");
     }
 
-    // Increment scan count in the background
+    // Track analytics and increment scan count in the background
+    trackProfileView(employee.id, req).catch(() => {});
     incrementScanCount(req.params.slug).catch(() => {});
 
     res.json({ success: true, data: await resolveEmployeeUrls(employee) });
