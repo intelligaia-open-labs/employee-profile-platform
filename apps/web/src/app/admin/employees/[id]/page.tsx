@@ -7,6 +7,7 @@ import { EmployeeForm } from "@/components/EmployeeForm";
 import type { EmployeePublic, ApiResponse } from "@business-profile/shared";
 import Link from "next/link";
 import Image from "next/image";
+import { resolveImageUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -78,7 +79,7 @@ export default function EditEmployeePage({
             <CardContent>
               <div className="flex items-center gap-6">
                 <Image
-                  src={`${API_URL}${employee.qr_code.qr_url}`}
+                  src={{resolveImageUrl(employee.qr_code.qr_url)!}}
                   alt="QR Code"
                   width={120}
                   height={120}
@@ -98,7 +99,7 @@ export default function EditEmployeePage({
                   </p>
                   <Button asChild size="sm" className="mt-3">
                     <a
-                      href={`${API_URL}${employee.qr_code.qr_url}`}
+                      href={{resolveImageUrl(employee.qr_code.qr_url)!}}
                       download={`${employee.slug}-qr.png`}
                     >
                       Download QR

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { clientApiFetch } from "@/lib/api";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
+import { resolveImageUrl } from "@/lib/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -46,7 +47,7 @@ export function EmployeeForm({ employee }: Props) {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(
-    employee?.profile_image ? `${API_URL}${employee.profile_image}` : null,
+    resolveImageUrl(employee?.profile_image),
   );
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);

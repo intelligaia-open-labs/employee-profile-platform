@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { MeetingDialog } from "./MeetingDialog";
+import { resolveImageUrl } from "@/lib/image";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -105,7 +106,7 @@ export function ProfileCard({ employee }: Props) {
           <div className="w-[164px] h-[164px] rounded-full border-4 border-white overflow-hidden shrink-0">
             {employee.profile_image ? (
               <Image
-                src={`${API_URL}${employee.profile_image}`}
+                src={resolveImageUrl(employee.profile_image)!}
                 alt={employee.full_name}
                 width={164}
                 height={164}

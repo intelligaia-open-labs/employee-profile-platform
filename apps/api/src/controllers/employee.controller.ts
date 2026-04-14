@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from "express";
 import * as employeeService from "../services/employee.service";
+import { getUploadedFilePath } from "../middleware/upload";
 
 export async function create(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const profileImage = req.file ? `/uploads/profiles/${req.file.filename}` : undefined;
+    const profileImage = req.file ? getUploadedFilePath(req.file) : undefined;
 
-    // Parse social_links from form data if present
     let body = req.body;
     if (typeof body.social_links === "string") {
       try {
@@ -60,7 +60,7 @@ export async function getById(req: Request, res: Response, next: NextFunction): 
 
 export async function update(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const profileImage = req.file ? `/uploads/profiles/${req.file.filename}` : undefined;
+    const profileImage = req.file ? getUploadedFilePath(req.file) : undefined;
 
     let body = req.body;
     if (typeof body.social_links === "string") {

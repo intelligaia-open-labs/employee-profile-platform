@@ -3,6 +3,8 @@ import type { CreateEmployeeInput, UpdateEmployeeInput } from "@business-profile
 import { generateSlug } from "../utils/slug";
 import { generateQRCode } from "../utils/qr";
 import { AppError } from "../middleware/error";
+import { useS3, env } from "../config/env";
+import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs/promises";
 import path from "path";
 
@@ -14,6 +16,32 @@ const employeeInclude = {
     select: { id: true, qr_url: true, scan_count: true },
   },
 };
+
+/** Delete a file — handles both S3 URLs and local paths */
+async function deleteFile(filePath: string) {
+  if (!filePath) return;
+
+  if (filePath.startsWith("https://") && useS3) {
+    try {
+      const s3 = new S3Client({
+        region: env.AWS_REGION,
+        credentials: {
+          accessKeyId: env.AWS_ACCESS_KEY_ID!,
+          secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
+        },
+      });
+      // Extract key from S3 URL
+      const url = new URL(filePath);
+      const key = url.pathname.slice(1); // remove leading /
+      await s3.send(new DeleteObjectCommand({ Bucket: env.AWS_S3_BUCKET!, Key: key }));
+    } catch {
+      // silent — file may already be deleted
+    }
+  } else {
+    const localPath = path.join(__dirname, "../../", filePath);
+    await fs.unlink(localPath).catch(() => {});
+  }
+}
 
 export async function createEmployee(data: CreateEmployeeInput, profileImage?: string) {
   const slug = generateSlug(data.full_name);
@@ -95,7 +123,6 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
 
   const { social_links, linkedin_url, website_url, ...rest } = data;
 
-  // Build update payload — only include fields that were actually provided
   const updateData: Record<string, unknown> = { ...rest };
   if (linkedin_url !== undefined) {
     updateData.linkedin_url = linkedin_url || null;
@@ -104,10 +131,8 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
     updateData.website_url = website_url || null;
   }
   if (profileImage) {
-    // Delete old image if exists
     if (existing.profile_image) {
-      const oldPath = path.join(__dirname, "../../", existing.profile_image);
-      await fs.unlink(oldPath).catch(() => {});
+      await deleteFile(existing.profile_image);
     }
     updateData.profile_image = profileImage;
   }
@@ -147,16 +172,13 @@ export async function deleteEmployee(id: string) {
     throw new AppError(404, "Employee not found");
   }
 
-  // Clean up files
   if (existing.profile_image) {
-    const imgPath = path.join(__dirname, "../../", existing.profile_image);
-    await fs.unlink(imgPath).catch(() => {});
+    await deleteFile(existing.profile_image);
   }
 
   const qr = await prisma.qRCode.findUnique({ where: { employee_id: id } });
   if (qr) {
-    const qrPath = path.join(__dirname, "../../", qr.qr_url);
-    await fs.unlink(qrPath).catch(() => {});
+    await deleteFile(qr.qr_url);
   }
 
   await prisma.employee.delete({ where: { id } });
