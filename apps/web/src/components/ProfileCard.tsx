@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
+import { MeetingDialog } from "./MeetingDialog";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -10,6 +12,7 @@ interface Props {
 }
 
 export function ProfileCard({ employee }: Props) {
+  const [meetingOpen, setMeetingOpen] = useState(false);
   const phoneDigits = employee.phone.replace(/[^0-9]/g, "");
 
   const telegramLinks = employee.social_links.filter(
@@ -299,6 +302,12 @@ export function ProfileCard({ employee }: Props) {
 
               {/* Buttons */}
               <div className="flex flex-col gap-[8px] w-full">
+                <button
+                  onClick={() => setMeetingOpen(true)}
+                  className="w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
+                >
+                  Schedule a Meeting
+                </button>
                 <a
                   href={`https://wa.me/${phoneDigits}`}
                   target="_blank"
@@ -306,12 +315,6 @@ export function ProfileCard({ employee }: Props) {
                   className="w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
                 >
                   Contact on WhatsApp
-                </a>
-                <a
-                  href={`mailto:${employee.email}?subject=Meeting%20Request`}
-                  className="w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
-                >
-                  Add to Calendar
                 </a>
               </div>
             </div>
@@ -389,10 +392,8 @@ export function ProfileCard({ employee }: Props) {
       </div>
 
       {/* Fixed Schedule a Meeting FAB — sticks to bottom of viewport */}
-      <a
-        href={`https://wa.me/${phoneDigits}`}
-        target="_blank"
-        rel="noopener noreferrer"
+      <button
+        onClick={() => setMeetingOpen(true)}
         className="fixed bottom-[20px] right-[20px] z-50 flex gap-[10.732px] items-center justify-center bg-[#121212] text-white pl-[16px] pr-[6px] py-[6px] rounded-full shadow-lg hover:bg-[#2a2a2a] transition-colors"
       >
         <span className="text-[12px] font-medium leading-[14px] w-[64px]">
@@ -404,7 +405,15 @@ export function ProfileCard({ employee }: Props) {
           alt=""
           className="w-[34px] h-[34px] shrink-0"
         />
-      </a>
+      </button>
+
+      {/* Meeting Request Dialog */}
+      <MeetingDialog
+        slug={employee.slug}
+        employeeName={employee.full_name}
+        open={meetingOpen}
+        onClose={() => setMeetingOpen(false)}
+      />
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { errorHandler } from "./middleware/error";
 import { authRouter } from "./routes/auth";
 import { employeeRouter } from "./routes/employees";
 import { publicRouter } from "./routes/public";
+import { meetingRouter } from "./routes/meetings";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use("/auth", authRouter);
 app.use("/employees", employeeRouter);
 app.use("/public", publicRouter);
+app.use("/meeting-requests", meetingRouter);
 
 // Health check
 app.get("/health", (_req, res) => {

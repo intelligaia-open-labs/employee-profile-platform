@@ -34,8 +34,9 @@ model Employee {
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
-  social_links SocialLink[]
-  qr_code      QRCode?
+  social_links     SocialLink[]
+  qr_code          QRCode?
+  meeting_requests MeetingRequest[]
 
   @@index([slug])
   @@index([is_active])
@@ -64,4 +65,22 @@ model QRCode {
   employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
 
   @@map("qr_codes")
+}
+
+model MeetingRequest {
+  id             String   @id @default(uuid()) @db.Uuid
+  employee_id    String   @db.Uuid
+  visitor_name   String
+  visitor_email  String
+  visitor_phone  String?
+  message        String?
+  preferred_date String?
+  status         String   @default("pending")
+  created_at     DateTime @default(now())
+
+  employee Employee @relation(fields: [employee_id], references: [id], onDelete: Cascade)
+
+  @@index([employee_id])
+  @@index([status])
+  @@map("meeting_requests")
 }

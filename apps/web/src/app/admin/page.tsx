@@ -33,11 +33,24 @@ function nameHue(name: string): number {
   return Math.abs(hash) % 360;
 }
 
+interface MeetingRequestData {
+  id: string;
+  visitor_name: string;
+  visitor_email: string;
+  visitor_phone: string | null;
+  message: string | null;
+  preferred_date: string | null;
+  status: string;
+  created_at: string;
+  employee: { full_name: string; slug: string };
+}
+
 export default function AdminDashboard() {
   const { admin, loading: authLoading, logout } = useAuth();
   const [employees, setEmployees] = useState<EmployeePublic[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [meetings, setMeetings] = useState<MeetingRequestData[]>([]);
 
   const fetchEmployees = useCallback(async () => {
     try {
@@ -53,9 +66,23 @@ export default function AdminDashboard() {
     }
   }, []);
 
+  const fetchMeetings = useCallback(async () => {
+    try {
+      const res = await clientApiFetch<{ data: MeetingRequestData[] }>(
+        "/meeting-requests",
+      );
+      setMeetings(res.data || []);
+    } catch {
+      // silent
+    }
+  }, []);
+
   useEffect(() => {
-    if (admin) fetchEmployees();
-  }, [admin, fetchEmployees]);
+    if (admin) {
+      fetchEmployees();
+      fetchMeetings();
+    }
+  }, [admin, fetchEmployees, fetchMeetings]);
 
   async function toggleActive(id: string) {
     await clientApiFetch(`/employees/${id}/toggle-active`, { method: "PATCH" });
@@ -68,7 +95,17 @@ export default function AdminDashboard() {
     fetchEmployees();
   }
 
+  async function updateMeetingStatus(id: string, status: string) {
+    await clientApiFetch(`/meeting-requests/${id}/status`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    });
+    fetchMeetings();
+  }
+
   const activeCount = employees.filter((e) => e.is_active).length;
+  const pendingMeetings = meetings.filter((m) => m.status === "pending").length;
   const totalScans = employees.reduce(
     (sum, e) => sum + (e.qr_code?.scan_count ?? 0),
     0,
@@ -111,7 +148,7 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -142,6 +179,18 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <p className="text-3xl font-bold tabular-nums">{totalScans}</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Meeting Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold tabular-nums text-amber-600">
+                {pendingMeetings}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -283,6 +332,92 @@ export default function AdminDashboard() {
               </TableBody>
             </Table>
           </Card>
+        )}
+
+        {/* Meeting Requests Section */}
+        {meetings.length > 0 && (
+          <>
+            <div className="flex items-center justify-between mt-10 mb-4">
+              <h2 className="text-lg font-semibold">Meeting Requests</h2>
+              <Badge variant="secondary">{pendingMeetings} pending</Badge>
+            </div>
+            <Card>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Visitor</TableHead>
+                    <TableHead className="hidden sm:table-cell">For</TableHead>
+                    <TableHead className="hidden md:table-cell">Date</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {meetings.map((m) => (
+                    <TableRow key={m.id}>
+                      <TableCell>
+                        <div>
+                          <p className="text-sm font-medium">{m.visitor_name}</p>
+                          <p className="text-xs text-muted-foreground">{m.visitor_email}</p>
+                          {m.visitor_phone && (
+                            <p className="text-xs text-muted-foreground">{m.visitor_phone}</p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="hidden sm:table-cell text-sm text-muted-foreground">
+                        {m.employee.full_name}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell text-sm text-muted-foreground">
+                        {m.preferred_date || "Not specified"}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            m.status === "confirmed"
+                              ? "default"
+                              : m.status === "declined"
+                                ? "destructive"
+                                : "secondary"
+                          }
+                          className={
+                            m.status === "confirmed"
+                              ? "bg-green-100 text-green-800 border-0"
+                              : m.status === "pending"
+                                ? "bg-amber-100 text-amber-800 border-0"
+                                : ""
+                          }
+                        >
+                          {m.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {m.status === "pending" && (
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateMeetingStatus(m.id, "confirmed")}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                            >
+                              Confirm
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => updateMeetingStatus(m.id, "declined")}
+                              className="text-muted-foreground hover:text-destructive"
+                            >
+                              Decline
+                            </Button>
+                          </div>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+          </>
         )}
       </main>
     </div>
