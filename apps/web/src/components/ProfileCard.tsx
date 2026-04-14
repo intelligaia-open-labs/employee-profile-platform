@@ -20,26 +20,33 @@ export function ProfileCard({ employee }: Props) {
   const [shareOpen, setShareOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
 
-  /** Fetch vCard and open via native share (Android) or blob (iOS/desktop) */
+  /** Add to contact — platform-aware approach */
   async function handleAddToContact() {
+    const vcardUrl = `${API_URL}/public/vcard/${employee.slug}`;
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    // iOS: direct navigation — Safari's built-in vCard handler opens Contacts
+    if (isIOS) {
+      window.location.href = vcardUrl;
+      return;
+    }
+
+    // Android + Desktop: fetch and share/download
     try {
-      const res = await fetch(`${API_URL}/public/vcard/${employee.slug}`);
+      const res = await fetch(vcardUrl);
       const vcfText = await res.text();
 
       const file = new File([vcfText], `${employee.full_name}.vcf`, {
         type: "text/vcard",
       });
 
-      // Android: navigator.share with file opens share sheet → Contacts
-      if (typeof navigator.share === "function" && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: employee.full_name,
-        });
+      // Android: navigator.share opens share sheet → pick Contacts
+      if (navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ files: [file], title: employee.full_name });
         return;
       }
 
-      // iOS / Desktop: blob URL triggers native vCard handler
+      // Desktop: blob download
       const blob = new Blob([vcfText], { type: "text/vcard" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -51,7 +58,8 @@ export function ProfileCard({ employee }: Props) {
       URL.revokeObjectURL(url);
     } catch (err) {
       if (err instanceof Error && err.name === "AbortError") return;
-      window.open(`${API_URL}/public/vcard/${employee.slug}`, "_blank");
+      // Final fallback: direct navigation
+      window.location.href = vcardUrl;
     }
   }
 
