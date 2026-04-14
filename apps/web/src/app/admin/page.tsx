@@ -60,7 +60,7 @@ interface CredentialWithEmployee extends EmployeeCredentialPublic {
 
 interface AnalyticsData {
   overview: { totalViews: number; todayViews: number; weekViews: number; monthViews: number; uniqueVisitors: number };
-  byEmployee: { employee: { full_name: string; slug: string; designation: string; profile_image: string | null }; views: number }[];
+  byEmployee: { employee: { id: string; full_name: string; slug: string; designation: string; profile_image: string | null }; views: number }[];
   devices: { device: string; count: number }[];
   browsers: { browser: string; count: number }[];
   os: { os: string; count: number }[];
