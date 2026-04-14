@@ -371,7 +371,7 @@ export function ProfileCard({ employee }: Props) {
                     India
                   </p>
                   <a
-                    href="https://maps.google.com/?q=Plot+I-63+Sector+83+Alpha+IT+City+Mohali+Punjab+140306+India"
+                    href="https://maps.app.goo.gl/x33db9KgBQ7Skz3Z9"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex gap-[10.732px] items-center justify-center bg-[#121212] text-white text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors"
