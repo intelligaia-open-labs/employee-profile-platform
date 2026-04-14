@@ -382,23 +382,6 @@ export function ProfileCard({ employee }: Props) {
                 </div>
               )}
 
-              {/* Floating Schedule a Meeting FAB */}
-              <a
-                href={`https://wa.me/${phoneDigits}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="absolute -bottom-[4px] right-[16px] flex gap-[10.732px] items-center justify-center bg-[#121212] text-white pl-[16px] pr-[6px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors translate-y-1/2"
-              >
-                <span className="text-[12px] font-medium leading-[14px] w-[64px]">
-                  Schedule a Meeting
-                </span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/profile/icon-calendar.svg"
-                  alt=""
-                  className="w-[34px] h-[34px] shrink-0"
-                />
-              </a>
             </div>
 
             {/* Save Contact — full width below cards */}
@@ -411,6 +394,24 @@ export function ProfileCard({ employee }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Fixed Schedule a Meeting FAB — sticks to bottom of viewport */}
+      <a
+        href={`https://wa.me/${phoneDigits}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-[20px] right-[20px] z-50 flex gap-[10.732px] items-center justify-center bg-[#121212] text-white pl-[16px] pr-[6px] py-[6px] rounded-full shadow-lg hover:bg-[#2a2a2a] transition-colors"
+      >
+        <span className="text-[12px] font-medium leading-[14px] w-[64px]">
+          Schedule a Meeting
+        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/profile/icon-calendar.svg"
+          alt=""
+          className="w-[34px] h-[34px] shrink-0"
+        />
+      </a>
     </div>
   );
 }
