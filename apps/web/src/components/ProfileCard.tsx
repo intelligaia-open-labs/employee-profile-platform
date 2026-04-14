@@ -20,6 +20,7 @@ export function ProfileCard({ employee }: Props) {
   const [showAllSocial, setShowAllSocial] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
+  const [qrLoaded, setQrLoaded] = useState(false);
 
   /** Add to contact — platform-aware approach */
   async function handleAddToContact() {
@@ -499,7 +500,7 @@ export function ProfileCard({ employee }: Props) {
       <div className="fixed bottom-[20px] left-[20px] z-50 flex gap-[10px]">
         {/* QR Button */}
         <button
-          onClick={() => setQrOpen(true)}
+          onClick={() => { setQrLoaded(false); setQrOpen(true); }}
           className="w-[46px] h-[46px] rounded-full bg-[#121212] text-white shadow-lg flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -614,15 +615,21 @@ export function ProfileCard({ employee }: Props) {
             <p className="text-[12px] text-[#727272] mb-4">
               Scan to view profile
             </p>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`${API_URL}/public/qr/${employee.slug}`}
-              alt="QR Code"
-              className="w-[200px] h-[200px] mx-auto border rounded-xl"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`;
-              }}
-            />
+            <div className="relative w-[200px] h-[200px] mx-auto">
+              {!qrLoaded && (
+                <div className="absolute inset-0 bg-[#f0f0f0] rounded-xl animate-pulse" />
+              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${API_URL}/public/qr/${employee.slug}`}
+                alt="QR Code"
+                className={`w-[200px] h-[200px] border rounded-xl transition-opacity duration-300 ${qrLoaded ? "opacity-100" : "opacity-0"}`}
+                onLoad={() => setQrLoaded(true)}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.href)}`;
+                }}
+              />
+            </div>
             <div className="flex gap-2 mt-5">
               <button
                 onClick={() => { setQrOpen(false); handleAddToContact(); }}
