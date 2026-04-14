@@ -19,7 +19,6 @@ export function ProfileCard({ employee }: Props) {
     (s) => s.platform.toLowerCase() !== "telegram",
   );
 
-  // Build social link items for the Social Links card
   const socialItems: {
     key: string;
     icon: string;
@@ -38,7 +37,6 @@ export function ProfileCard({ employee }: Props) {
     });
   }
 
-  // WhatsApp as social link
   socialItems.push({
     key: "whatsapp",
     icon: "/profile/icon-whatsapp.svg",
@@ -81,14 +79,13 @@ export function ProfileCard({ employee }: Props) {
     <div
       className="relative w-full max-w-md mx-auto min-h-screen rounded-[16px] overflow-hidden pb-[60px] pt-[36px] px-[16px]"
       style={{
-        backgroundImage: "url(/profile/bg.png)",
+        backgroundImage: "url(/profile/bg-mobile.png)",
         backgroundSize: "cover",
         backgroundPosition: "center top",
         backgroundRepeat: "no-repeat",
         backgroundAttachment: "fixed",
       }}
     >
-
       {/* Content */}
       <div className="relative flex flex-col gap-[58px] items-start w-full">
         {/* ── Logo ── */}
@@ -327,7 +324,7 @@ export function ProfileCard({ employee }: Props) {
             </div>
 
             {/* ── Company Info Card ── */}
-            <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px] relative">
+            <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px] relative overflow-visible">
               {/* Header */}
               <div className="flex flex-col gap-[10px] items-start text-center w-full">
                 <p className="text-[20px] font-semibold text-[#121212] leading-[normal] w-full">
@@ -351,6 +348,21 @@ export function ProfileCard({ employee }: Props) {
                     <p className="text-[12px] font-medium text-[#727272] leading-[normal] text-right w-[157px]">
                       {employee.address}
                     </p>
+                    {/* Get directions button */}
+                    <a
+                      href={`https://maps.google.com/?q=${encodeURIComponent(employee.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex gap-[10.732px] items-center justify-center bg-[#121212] text-white text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors"
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/profile/icon-location.svg"
+                        alt=""
+                        className="w-[12px] h-[12px] rotate-180 -scale-y-100 invert"
+                      />
+                      Get directions
+                    </a>
                   </div>
                 </div>
               )}
@@ -370,14 +382,32 @@ export function ProfileCard({ employee }: Props) {
                 </div>
               )}
 
-              {/* Save Contact CTA */}
+              {/* Floating Schedule a Meeting FAB */}
               <a
-                href={`${API_URL}/public/vcard/${employee.slug}`}
-                className="w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors"
+                href={`https://wa.me/${phoneDigits}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="absolute -bottom-[4px] right-[16px] flex gap-[10.732px] items-center justify-center bg-[#121212] text-white pl-[16px] pr-[6px] py-[6px] rounded-full hover:bg-[#2a2a2a] transition-colors translate-y-1/2"
               >
-                Save Contact
+                <span className="text-[12px] font-medium leading-[14px] w-[64px]">
+                  Schedule a Meeting
+                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/profile/icon-calendar.svg"
+                  alt=""
+                  className="w-[34px] h-[34px] shrink-0"
+                />
               </a>
             </div>
+
+            {/* Save Contact — full width below cards */}
+            <a
+              href={`${API_URL}/public/vcard/${employee.slug}`}
+              className="w-full bg-[#121212] text-white text-[14px] font-medium leading-[18px] py-[12px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors mt-[8px]"
+            >
+              Save Contact
+            </a>
           </div>
         </div>
       </div>
