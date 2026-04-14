@@ -433,13 +433,6 @@ export function ProfileCard({ employee }: Props) {
               </div>
             </div>
 
-            {/* Save Contact — full width below cards */}
-            <a
-              href={`${API_URL}/public/vcard/${employee.slug}`}
-              className="w-full bg-[#121212] text-white text-[14px] font-medium leading-[18px] py-[12px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors mt-[8px]"
-            >
-              Save Contact
-            </a>
           </div>
         </div>
       </div>
