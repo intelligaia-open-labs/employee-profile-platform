@@ -77,7 +77,7 @@ export function ProfileCard({ employee }: Props) {
 
   return (
     <div
-      className="relative w-full max-w-md mx-auto min-h-screen pb-[60px] pt-[36px] px-[16px]"
+      className="relative w-full max-w-md mx-auto min-h-screen pb-[90px] pt-[36px] px-[16px]"
     >
       {/* Content */}
       <div className="relative flex flex-col gap-[58px] items-start w-full">
@@ -210,7 +210,7 @@ export function ProfileCard({ employee }: Props) {
               {/* Phone */}
               <div className="flex flex-col w-full">
                 <p className="text-[12px] font-normal text-[#727272] leading-[18px]">
-                  Contact Us
+                  Phone
                 </p>
                 <p className="text-[14px] font-medium text-[#121212] leading-[20px]">
                   {employee.phone}
@@ -338,7 +338,7 @@ export function ProfileCard({ employee }: Props) {
                     Address
                   </p>
                   <div className="flex flex-col gap-[12px] items-end">
-                    <p className="text-[12px] font-medium text-[#727272] leading-[normal] text-right w-[157px]">
+                    <p className="text-[12px] font-medium text-[#727272] leading-[normal] text-right max-w-[60%]">
                       {employee.address}
                     </p>
                     {/* Get directions button */}
@@ -368,7 +368,7 @@ export function ProfileCard({ employee }: Props) {
                     href={employee.website_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium leading-[14px] text-right w-[157px] hover:underline"
+                    className="font-medium leading-[14px] text-right max-w-[60%] hover:underline"
                   >
                     {employee.website_url.replace(/^https?:\/\//, "")}
                   </a>
