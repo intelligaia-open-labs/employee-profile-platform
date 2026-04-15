@@ -3,6 +3,7 @@ import { requireEmployeeAuth, requirePermission } from "../middleware/auth";
 import { upload } from "../middleware/upload";
 import { getUploadedFilePath } from "../middleware/upload";
 import * as employeeService from "../services/employee.service";
+import { resolveEmployeeUrls } from "../services/employee.service";
 import type { Request, Response, NextFunction } from "express";
 
 export const employeePortalRouter = Router();
@@ -16,7 +17,7 @@ employeePortalRouter.get(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const employee = await employeeService.getEmployeeById(req.employeeAuth!.employeeId);
-      res.json({ success: true, data: employee });
+      res.json({ success: true, data: await resolveEmployeeUrls(employee) });
     } catch (err) {
       next(err);
     }
@@ -45,7 +46,7 @@ employeePortalRouter.put(
         body,
         profileImage
       );
-      res.json({ success: true, data: employee });
+      res.json({ success: true, data: await resolveEmployeeUrls(employee) });
     } catch (err) {
       next(err);
     }
