@@ -4,6 +4,7 @@ import { upload } from "../middleware/upload";
 import { getUploadedFilePath } from "../middleware/upload";
 import * as employeeService from "../services/employee.service";
 import { resolveEmployeeUrls } from "../services/employee.service";
+import { getEmployeeAnalytics } from "../services/analytics.service";
 import type { Request, Response, NextFunction } from "express";
 
 export const employeePortalRouter = Router();
@@ -18,6 +19,20 @@ employeePortalRouter.get(
     try {
       const employee = await employeeService.getEmployeeById(req.employeeAuth!.employeeId);
       res.json({ success: true, data: await resolveEmployeeUrls(employee) });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+// Get own analytics
+employeePortalRouter.get(
+  "/analytics",
+  requirePermission("analytics:view"),
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await getEmployeeAnalytics(req.employeeAuth!.employeeId);
+      res.json({ success: true, data });
     } catch (err) {
       next(err);
     }
