@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { apiFetch } from "@/lib/api";
+import { resolveImageUrl } from "@/lib/image";
 import type { ApiResponse, EmployeePublic } from "@business-profile/shared";
 import { ProfileCard } from "@/components/ProfileCard";
 import { ProfileReveal } from "@/components/ProfileReveal";
@@ -27,10 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const employee = await getEmployee(slug);
   if (!employee) return { title: "Profile Not Found" };
 
+  const profileImage = resolveImageUrl(employee.profile_image);
+  const faviconUrl = profileImage || `/api/favicon?letter=${encodeURIComponent(employee.full_name.charAt(0))}`;
+
   return {
     title: `${employee.full_name} - ${employee.designation}`,
     description:
       employee.bio || `${employee.full_name}'s digital business profile`,
+    icons: {
+      icon: faviconUrl,
+      apple: faviconUrl,
+    },
   };
 }
 
