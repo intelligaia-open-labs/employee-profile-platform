@@ -162,19 +162,20 @@ export default function EmployeePortal() {
   }, []);
 
   const fetchAnalytics = useCallback(async () => {
-    if (!hasPermission("analytics:view")) return;
     try {
       const res = await clientApiFetch<{ data: EmployeeAnalytics }>("/portal/analytics");
       setAnalytics(res.data);
     } catch {
       // Analytics might not be available
     }
-  }, [hasPermission]);
+  }, []);
 
   useEffect(() => {
     if (auth) {
       fetchProfile();
-      fetchAnalytics();
+      if (auth.permissions.includes("analytics:view") || auth.role === "admin") {
+        fetchAnalytics();
+      }
     }
   }, [auth, fetchProfile, fetchAnalytics]);
 

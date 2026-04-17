@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { clientApiFetch } from "./api";
 
@@ -26,16 +26,19 @@ export function useEmployeeAuth() {
       .finally(() => setLoading(false));
   }, [router]);
 
-  async function logout() {
+  const logout = useCallback(async () => {
     await clientApiFetch("/auth/employee/logout", { method: "POST" });
     router.push("/employee/login");
-  }
+  }, [router]);
 
-  function hasPermission(perm: string): boolean {
-    if (!employee) return false;
-    if (employee.role === "admin") return true;
-    return employee.permissions.includes(perm);
-  }
+  const hasPermission = useCallback(
+    (perm: string): boolean => {
+      if (!employee) return false;
+      if (employee.role === "admin") return true;
+      return employee.permissions.includes(perm);
+    },
+    [employee]
+  );
 
   return { employee, loading, logout, hasPermission };
 }
