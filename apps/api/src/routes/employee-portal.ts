@@ -54,6 +54,9 @@ employeePortalRouter.put(
       if (typeof body.phone_numbers === "string") {
         try { body.phone_numbers = JSON.parse(body.phone_numbers); } catch { /* ignore */ }
       }
+      if (typeof body.quick_actions === "string") {
+        try { body.quick_actions = JSON.parse(body.quick_actions); } catch { /* ignore */ }
+      }
 
       const profileImage = req.file ? getUploadedFilePath(req.file) : undefined;
       const employee = await employeeService.updateEmployee(

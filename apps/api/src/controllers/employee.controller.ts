@@ -22,6 +22,11 @@ export async function create(req: Request, res: Response, next: NextFunction): P
         body = { ...body, phone_numbers: [] };
       }
     }
+    if (typeof body.quick_actions === "string") {
+      try {
+        body = { ...body, quick_actions: JSON.parse(body.quick_actions) };
+      } catch { /* ignore */ }
+    }
 
     const employee = await employeeService.createEmployee(body, profileImage);
     res.status(201).json({ success: true, data: await resolveEmployeeUrls(employee) });
@@ -84,6 +89,11 @@ export async function update(req: Request, res: Response, next: NextFunction): P
       } catch {
         body = { ...body, phone_numbers: [] };
       }
+    }
+    if (typeof body.quick_actions === "string") {
+      try {
+        body = { ...body, quick_actions: JSON.parse(body.quick_actions) };
+      } catch { /* ignore */ }
     }
 
     const employee = await employeeService.updateEmployee(req.params.id, body, profileImage);

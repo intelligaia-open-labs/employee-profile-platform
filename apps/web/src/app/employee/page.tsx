@@ -145,6 +145,7 @@ export default function EmployeePortal() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [calendarUrl, setCalendarUrl] = useState("");
+  const [quickActions, setQuickActions] = useState<string[]>(["call", "email", "whatsapp", "add_contact"]);
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberInput[]>([]);
   const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>([]);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -189,6 +190,7 @@ export default function EmployeePortal() {
     setLinkedinUrl(p.linkedin_url || "");
     setWebsiteUrl(p.website_url || "");
     setCalendarUrl(p.calendar_url || "");
+    setQuickActions(p.quick_actions?.length ? p.quick_actions : ["call", "email", "whatsapp", "add_contact"]);
     setPhoneNumbers(
       p.phone_numbers?.length > 0
         ? p.phone_numbers.map((pn) => ({ country_code: pn.country_code, number: pn.number, label: pn.label || "", is_primary: pn.is_primary }))
@@ -222,6 +224,7 @@ export default function EmployeePortal() {
       formData.append("linkedin_url", linkedinUrl);
       formData.append("website_url", websiteUrl);
       formData.append("calendar_url", calendarUrl);
+      formData.append("quick_actions", JSON.stringify(quickActions));
       formData.append("phone_numbers", JSON.stringify(phoneNumbers.filter((p) => p.number)));
       formData.append("social_links", JSON.stringify(socialLinks.filter((s) => s.url)));
       if (profileImageFile) formData.append("profile_image", profileImageFile);
@@ -1018,6 +1021,108 @@ export default function EmployeePortal() {
                 >
                   <Plus className="w-3.5 h-3.5" /> Add Social Link
                 </Button>
+              </CardContent>
+            </Card>
+
+            {/* Quick Actions */}
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">Quick Action Buttons</CardTitle>
+                <p className="text-[11px] text-muted-foreground mt-0.5">Choose which buttons appear on your public profile. Drag to reorder.</p>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {(() => {
+                  const allActions = [
+                    { key: "call", label: "Call", desc: "Phone call button" },
+                    { key: "email", label: "Email", desc: "Send email button" },
+                    { key: "whatsapp", label: "WhatsApp", desc: "Open WhatsApp chat" },
+                    { key: "add_contact", label: "Add to Contact", desc: "Save vCard" },
+                    { key: "calendar", label: "Book Meeting", desc: "Google Calendar booking" },
+                    { key: "linkedin", label: "LinkedIn", desc: "Open LinkedIn profile" },
+                    { key: "telegram", label: "Telegram", desc: "Open Telegram" },
+                    { key: "website", label: "Website", desc: "Visit website" },
+                  ];
+
+                  const toggleAction = (key: string) => {
+                    setQuickActions((prev) =>
+                      prev.includes(key) ? prev.filter((a) => a !== key) : [...prev, key]
+                    );
+                  };
+
+                  const moveAction = (key: string, dir: -1 | 1) => {
+                    setQuickActions((prev) => {
+                      const idx = prev.indexOf(key);
+                      if (idx < 0) return prev;
+                      const next = [...prev];
+                      const swap = idx + dir;
+                      if (swap < 0 || swap >= next.length) return prev;
+                      [next[idx], next[swap]] = [next[swap], next[idx]];
+                      return next;
+                    });
+                  };
+
+                  // Show enabled first (in order), then disabled
+                  const enabled = quickActions.filter((k) => allActions.some((a) => a.key === k));
+                  const disabled = allActions.filter((a) => !quickActions.includes(a.key)).map((a) => a.key);
+                  const ordered = [...enabled, ...disabled];
+
+                  return ordered.map((key) => {
+                    const action = allActions.find((a) => a.key === key)!;
+                    const isEnabled = quickActions.includes(key);
+                    const idx = quickActions.indexOf(key);
+                    return (
+                      <div
+                        key={key}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-lg border transition-all ${
+                          isEnabled
+                            ? "border-primary/20 bg-primary/[0.03]"
+                            : "border-muted bg-muted/30 opacity-60"
+                        }`}
+                      >
+                        {/* Toggle */}
+                        <button
+                          type="button"
+                          onClick={() => toggleAction(key)}
+                          className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors ${
+                            isEnabled
+                              ? "bg-primary border-primary text-primary-foreground"
+                              : "border-muted-foreground/30 hover:border-primary/50"
+                          }`}
+                        >
+                          {isEnabled && <Check className="w-3 h-3" />}
+                        </button>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium">{action.label}</p>
+                          <p className="text-[11px] text-muted-foreground">{action.desc}</p>
+                        </div>
+
+                        {/* Reorder arrows */}
+                        {isEnabled && (
+                          <div className="flex flex-col gap-0.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => moveAction(key, -1)}
+                              disabled={idx === 0}
+                              className="p-0.5 rounded hover:bg-muted disabled:opacity-20 transition-opacity"
+                            >
+                              <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 8l4-4 4 4" /></svg>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => moveAction(key, 1)}
+                              disabled={idx === quickActions.length - 1}
+                              className="p-0.5 rounded hover:bg-muted disabled:opacity-20 transition-opacity"
+                            >
+                              <svg className="w-3 h-3" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M2 4l4 4 4-4" /></svg>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  });
+                })()}
               </CardContent>
             </Card>
 

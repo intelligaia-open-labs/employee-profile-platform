@@ -11,6 +11,7 @@ export interface EmployeePublic {
   website_url: string | null;
   calendar_url: string | null;
   address: string | null;
+  quick_actions: string[];
   is_active: boolean;
   social_links: SocialLinkPublic[];
   phone_numbers: PhoneNumberPublic[];

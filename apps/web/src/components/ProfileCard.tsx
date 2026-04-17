@@ -189,81 +189,77 @@ export function ProfileCard({ employee }: Props) {
               </div>
             </div>
 
-            {/* Quick action buttons */}
+            {/* Quick action buttons — configurable per employee */}
             <div className="flex gap-[6px] items-center">
-              {/* Call */}
-              <a
-                href={`tel:${displayPhone}`}
-                className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/profile/icon-call.svg"
-                  alt="Call"
-                  className="w-full h-full"
-                />
-              </a>
-              {/* Email */}
-              <a
-                href={`mailto:${employee.email}`}
-                className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/profile/icon-email.svg"
-                  alt="Email"
-                  className="w-full h-full"
-                />
-              </a>
-              {/* WhatsApp */}
-              <a
-                href={`https://wa.me/${phoneDigits}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/profile/icon-sms.svg"
-                  alt="WhatsApp"
-                  className="w-full h-full"
-                />
-              </a>
-              {/* Add to Contact */}
-              <button
-                onClick={handleAddToContact}
-                className="w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center overflow-hidden hover:opacity-90 transition-opacity"
-              >
-                <svg
-                  className="w-[24px] h-[24px] text-[#121212]"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.8}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
-                  />
-                </svg>
-              </button>
-              {/* Book a Meeting — Google Calendar */}
-              {employee.calendar_url && (
-                <a
-                  href={employee.calendar_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src="/profile/icon-calendar-booking.svg"
-                    alt="Book a Meeting"
-                    className="w-full h-full"
-                  />
-                </a>
-              )}
+              {(employee.quick_actions ?? ["call", "email", "whatsapp", "add_contact"]).map((action) => {
+                switch (action) {
+                  case "call":
+                    return (
+                      <a key="call" href={`tel:${displayPhone}`} className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-call.svg" alt="Call" className="w-full h-full" />
+                      </a>
+                    );
+                  case "email":
+                    return (
+                      <a key="email" href={`mailto:${employee.email}`} className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-email.svg" alt="Email" className="w-full h-full" />
+                      </a>
+                    );
+                  case "whatsapp":
+                    return (
+                      <a key="whatsapp" href={`https://wa.me/${phoneDigits}`} target="_blank" rel="noopener noreferrer" className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-sms.svg" alt="WhatsApp" className="w-full h-full" />
+                      </a>
+                    );
+                  case "add_contact":
+                    return (
+                      <button key="add_contact" onClick={handleAddToContact} className="w-[52px] h-[52px] rounded-full bg-white flex items-center justify-center overflow-hidden hover:opacity-90 transition-opacity">
+                        <svg className="w-[24px] h-[24px] text-[#121212]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+                        </svg>
+                      </button>
+                    );
+                  case "calendar":
+                    if (!employee.calendar_url) return null;
+                    return (
+                      <a key="calendar" href={employee.calendar_url} target="_blank" rel="noopener noreferrer" className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-calendar-booking.svg" alt="Book a Meeting" className="w-full h-full" />
+                      </a>
+                    );
+                  case "linkedin":
+                    if (!employee.linkedin_url) return null;
+                    return (
+                      <a key="linkedin" href={resolveHref("linkedin", employee.linkedin_url)} target="_blank" rel="noopener noreferrer" className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-linkedin.svg" alt="LinkedIn" className="w-full h-full" />
+                      </a>
+                    );
+                  case "telegram": {
+                    const telegramLink = employee.social_links.find((s) => s.platform.toLowerCase() === "telegram");
+                    if (!telegramLink) return null;
+                    return (
+                      <a key="telegram" href={resolveHref("telegram", telegramLink.url)} target="_blank" rel="noopener noreferrer" className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-telegram.svg" alt="Telegram" className="w-full h-full" />
+                      </a>
+                    );
+                  }
+                  case "website":
+                    if (!employee.website_url) return null;
+                    return (
+                      <a key="website" href={resolveHref("website", employee.website_url)} target="_blank" rel="noopener noreferrer" className="w-[52px] h-[52px] rounded-full overflow-hidden hover:opacity-90 transition-opacity">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/profile/icon-website.svg" alt="Website" className="w-full h-full" />
+                      </a>
+                    );
+                  default:
+                    return null;
+                }
+              })}
             </div>
           </div>
 
