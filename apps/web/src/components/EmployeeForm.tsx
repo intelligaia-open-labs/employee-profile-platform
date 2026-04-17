@@ -56,6 +56,7 @@ export function EmployeeForm({ employee }: Props) {
     phone: employee?.phone ?? "",
     linkedin_url: employee?.linkedin_url ?? "",
     website_url: employee?.website_url ?? "",
+    calendar_url: employee?.calendar_url ?? "",
     address: employee?.address ?? "",
   });
 
@@ -433,6 +434,27 @@ export function EmployeeForm({ employee }: Props) {
               value={form.address}
               onChange={(e) => handleChange("address", e.target.value)}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="calendar_url" className="flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-[#4285f4]" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                <path d="M3 9h18" stroke="currentColor" strokeWidth="1.8" />
+                <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+              Google Calendar Booking Link
+            </Label>
+            <Input
+              id="calendar_url"
+              type="url"
+              value={form.calendar_url}
+              onChange={(e) => handleChange("calendar_url", e.target.value)}
+              placeholder="https://calendar.google.com/calendar/appointments/..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Paste your Google Calendar appointment scheduling link
+            </p>
           </div>
         </CardContent>
       </Card>

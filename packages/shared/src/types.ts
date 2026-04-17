@@ -9,6 +9,7 @@ export interface EmployeePublic {
   phone: string;
   linkedin_url: string | null;
   website_url: string | null;
+  calendar_url: string | null;
   address: string | null;
   is_active: boolean;
   social_links: SocialLinkPublic[];

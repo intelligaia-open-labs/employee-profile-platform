@@ -144,6 +144,7 @@ export default function EmployeePortal() {
   const [address, setAddress] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [websiteUrl, setWebsiteUrl] = useState("");
+  const [calendarUrl, setCalendarUrl] = useState("");
   const [phoneNumbers, setPhoneNumbers] = useState<PhoneNumberInput[]>([]);
   const [socialLinks, setSocialLinks] = useState<SocialLinkInput[]>([]);
   const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
@@ -187,6 +188,7 @@ export default function EmployeePortal() {
     setAddress(p.address || "");
     setLinkedinUrl(p.linkedin_url || "");
     setWebsiteUrl(p.website_url || "");
+    setCalendarUrl(p.calendar_url || "");
     setPhoneNumbers(
       p.phone_numbers?.length > 0
         ? p.phone_numbers.map((pn) => ({ country_code: pn.country_code, number: pn.number, label: pn.label || "", is_primary: pn.is_primary }))
@@ -219,6 +221,7 @@ export default function EmployeePortal() {
       formData.append("address", address);
       formData.append("linkedin_url", linkedinUrl);
       formData.append("website_url", websiteUrl);
+      formData.append("calendar_url", calendarUrl);
       formData.append("phone_numbers", JSON.stringify(phoneNumbers.filter((p) => p.number)));
       formData.append("social_links", JSON.stringify(socialLinks.filter((s) => s.url)));
       if (profileImageFile) formData.append("profile_image", profileImageFile);
@@ -762,6 +765,34 @@ export default function EmployeePortal() {
               </Card>
             )}
 
+            {/* Google Calendar Booking */}
+            {profile.calendar_url && (
+              <Card className="border-[#4285f4]/20 bg-[#4285f4]/[0.02]">
+                <CardContent className="py-4">
+                  <a
+                    href={profile.calendar_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 group"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4285f4] to-[#1a73e8] flex items-center justify-center shrink-0 shadow-sm">
+                      <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="M3 9h18" stroke="currentColor" strokeWidth="1.8" />
+                        <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                        <circle cx="12" cy="15.5" r="1.5" fill="currentColor" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium group-hover:text-[#1a73e8] transition-colors">Google Calendar Booking</p>
+                      <p className="text-xs text-muted-foreground truncate">{profile.calendar_url}</p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-[#1a73e8] transition-colors shrink-0" />
+                  </a>
+                </CardContent>
+              </Card>
+            )}
+
             {/* QR Code */}
             {profile.qr_code && (
               <Card>
@@ -941,6 +972,18 @@ export default function EmployeePortal() {
                 <div className="space-y-2">
                   <Label>Website</Label>
                   <Input value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://www.example.com" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4 text-[#4285f4]" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="M3 9h18" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                    </svg>
+                    Google Calendar Booking
+                  </Label>
+                  <Input value={calendarUrl} onChange={(e) => setCalendarUrl(e.target.value)} placeholder="https://calendar.google.com/calendar/appointments/..." />
+                  <p className="text-[11px] text-muted-foreground">Paste your Google Calendar appointment scheduling link. Visitors can book meetings directly.</p>
                 </div>
                 {socialLinks.map((sl, i) => (
                   <div key={i} className="flex items-center gap-2">

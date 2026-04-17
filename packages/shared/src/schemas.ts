@@ -10,6 +10,13 @@ const socialLinkSchema = z.object({
   url: z.string().url("Invalid URL"),
 });
 
+const phoneNumberSchema = z.object({
+  country_code: z.string().min(1),
+  number: z.string().min(1),
+  label: z.string().optional().default(""),
+  is_primary: z.boolean().default(false),
+});
+
 export const createEmployeeSchema = z.object({
   full_name: z.string().min(2, "Name must be at least 2 characters").max(100),
   designation: z.string().min(2, "Designation is required").max(100),
@@ -18,8 +25,10 @@ export const createEmployeeSchema = z.object({
   phone: z.string().min(7, "Invalid phone number").max(20),
   linkedin_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   website_url: z.string().url("Invalid URL").optional().or(z.literal("")),
+  calendar_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   address: z.string().max(300).optional(),
   social_links: z.array(socialLinkSchema).optional(),
+  phone_numbers: z.array(phoneNumberSchema).optional(),
 });
 
 export const updateEmployeeSchema = createEmployeeSchema.partial();

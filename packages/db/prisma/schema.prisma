@@ -29,6 +29,7 @@ model Employee {
   phone         String?
   linkedin_url  String?
   website_url   String?
+  calendar_url  String?
   address       String?
   is_active     Boolean  @default(true)
   created_at    DateTime @default(now())

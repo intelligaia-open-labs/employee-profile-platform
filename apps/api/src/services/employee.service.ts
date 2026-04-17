@@ -146,7 +146,7 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
     throw new AppError(404, "Employee not found");
   }
 
-  const { social_links, phone_numbers, linkedin_url, website_url, ...rest } = data;
+  const { social_links, phone_numbers, linkedin_url, website_url, calendar_url, ...rest } = data;
 
   const updateData: Record<string, unknown> = { ...rest };
   if (linkedin_url !== undefined) {
@@ -154,6 +154,9 @@ export async function updateEmployee(id: string, data: UpdateEmployeeInput, prof
   }
   if (website_url !== undefined) {
     updateData.website_url = website_url || null;
+  }
+  if (calendar_url !== undefined) {
+    updateData.calendar_url = calendar_url || null;
   }
   if (profileImage) {
     if (existing.profile_image) {

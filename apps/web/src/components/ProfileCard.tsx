@@ -95,7 +95,7 @@ export function ProfileCard({ employee }: Props) {
       const digits = url.replace(/[^0-9]/g, "");
       return `https://wa.me/${digits}`;
     }
-    if (url.startsWith("http")) return url;
+    if (url.startsWith("http://") || url.startsWith("https://")) return url;
     return `https://${url}`;
   }
 
@@ -107,7 +107,7 @@ export function ProfileCard({ employee }: Props) {
       key: "linkedin",
       ...platformMeta.linkedin,
       label: "LinkedIn",
-      href: employee.linkedin_url,
+      href: resolveHref("linkedin", employee.linkedin_url),
     });
   }
 
@@ -128,7 +128,7 @@ export function ProfileCard({ employee }: Props) {
       key: "website",
       ...platformMeta.website,
       label: "Webpage",
-      href: employee.website_url,
+      href: resolveHref("website", employee.website_url),
     });
   }
 
@@ -410,6 +410,42 @@ export function ProfileCard({ employee }: Props) {
 
               {/* Divider */}
               <div className="w-full h-px bg-[#e5e5e5]" />
+
+              {/* Google Calendar Booking */}
+              {employee.calendar_url && (
+                <a
+                  href={employee.calendar_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-[12px] w-full p-[12px] rounded-[14px] border border-[#e5e5e5] hover:border-[#4285f4]/30 hover:bg-[#4285f4]/[0.03] transition-all group"
+                >
+                  {/* Google Calendar icon */}
+                  <div className="w-[44px] h-[44px] rounded-[12px] bg-gradient-to-br from-[#4285f4] to-[#1a73e8] flex items-center justify-center shrink-0 shadow-sm">
+                    <svg className="w-[22px] h-[22px] text-white" viewBox="0 0 24 24" fill="none">
+                      <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="M3 9h18" stroke="currentColor" strokeWidth="1.8" />
+                      <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                      <circle cx="12" cy="15.5" r="1.5" fill="currentColor" />
+                      <circle cx="8" cy="15.5" r="1.5" fill="currentColor" />
+                      <circle cx="16" cy="15.5" r="1.5" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <div className="flex flex-col gap-[2px] flex-1 min-w-0">
+                    <p className="text-[14px] font-semibold text-[#121212] leading-[18px] group-hover:text-[#1a73e8] transition-colors">
+                      Book on Google Calendar
+                    </p>
+                    <p className="text-[11px] font-normal text-[#727272] leading-[14px]">
+                      Pick a time that works for you
+                    </p>
+                  </div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="/profile/icon-chevron.svg"
+                    alt=""
+                    className="w-[20px] h-[20px] shrink-0"
+                  />
+                </a>
+              )}
 
               {/* Buttons */}
               <div className="flex flex-col gap-[8px] w-full">
