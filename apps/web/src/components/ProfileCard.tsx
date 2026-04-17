@@ -248,6 +248,22 @@ export function ProfileCard({ employee }: Props) {
                   />
                 </svg>
               </button>
+              {/* Book a Meeting — Google Calendar */}
+              {employee.calendar_url && (
+                <a
+                  href={employee.calendar_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-[52px] h-[52px] rounded-full bg-[#4285f4] flex items-center justify-center overflow-hidden hover:bg-[#3367d6] transition-colors shadow-md"
+                >
+                  <svg className="w-[24px] h-[24px] text-white" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="4" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M3 9h18" stroke="currentColor" strokeWidth="1.6" />
+                    <path d="M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                    <path d="M9.5 13.5l2 2 3.5-4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </a>
+              )}
             </div>
           </div>
 
