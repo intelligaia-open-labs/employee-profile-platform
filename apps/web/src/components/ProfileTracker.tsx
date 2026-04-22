@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
 export function ProfileTracker({ slug }: { slug: string }) {
+  const tracked = useRef(false);
+
   useEffect(() => {
+    if (tracked.current) return;
+    tracked.current = true;
+
     const params = new URLSearchParams(window.location.search);
     const source = params.get("source") || params.get("utm_source") || "direct";
     const referrer = document.referrer || undefined;

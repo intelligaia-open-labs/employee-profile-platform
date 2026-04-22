@@ -23,7 +23,7 @@ app.set("trust proxy", 1);
 // Security
 app.use(helmet());
 app.use(cors({
-  origin: env.CORS_ORIGIN,
+  origin: env.CORS_ORIGIN.split(",").map((o) => o.trim()).filter(Boolean),
   credentials: true,
 }));
 app.use(rateLimit({

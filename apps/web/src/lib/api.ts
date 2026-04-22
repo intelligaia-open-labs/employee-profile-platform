@@ -25,7 +25,7 @@ export async function clientApiFetch<T>(
   path: string,
   options?: RequestInit,
 ): Promise<T> {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}${path}`;
+  const url = `${API_URL}${path}`;
   const res = await fetch(url, {
     ...options,
     credentials: "include",

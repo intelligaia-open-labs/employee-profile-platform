@@ -51,35 +51,13 @@ export default async function ProfilePage({ params }: Props) {
   }
 
   return (
-    <ProfileReveal>
+    <>
       <ProfileTracker slug={slug} />
-      <main className="relative min-h-screen">
-        {/* Fixed background — mobile */}
-        <div
-          className="fixed inset-0 z-0 md:hidden"
-          style={{
-            backgroundImage: "url(/profile/bg-mobile.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center top",
-          }}
-        />
-        {/* Fixed background — desktop */}
-        <div
-          className="fixed inset-0 z-0 hidden md:block"
-          style={{
-            backgroundImage: "url(/profile/bg-desktop.png)",
-            backgroundSize: "cover",
-            backgroundPosition: "center center",
-          }}
-        />
-
-        {/* Centered card — same layout for mobile and desktop */}
-        <div className="relative z-10 flex justify-center">
-          <div className="w-full max-w-md md:max-w-[720px]">
-            <ProfileCard employee={employee} />
-          </div>
-        </div>
-      </main>
-    </ProfileReveal>
+      <ProfileReveal>
+        <main className="relative min-h-screen bg-white">
+          <ProfileCard employee={employee} />
+        </main>
+      </ProfileReveal>
+    </>
   );
 }
