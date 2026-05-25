@@ -1,0 +1,175 @@
+INTELLIGAIA SOURCE AVAILABLE LICENSE (ISAL) v1.0
+
+Copyright (c) 2026 Intelligaia
+
+Permission is granted to any individual or organization obtaining a copy of
+this software, documentation, design assets, configuration, prompts,
+workflows, schemas, or associated materials (collectively, the "Work") to
+use, study, modify, and internally deploy the Work under the conditions
+below.
+
+1. Permitted Use
+
+You may:
+
+  - Use the Work for personal, educational, research, evaluation, or
+    internal business purposes.
+  - Modify the Work for internal usage.
+  - Create derivative works for non-commercial purposes.
+  - Share modifications internally within your organization.
+  - Contribute improvements back to the community repository.
+  - Use the Work in demos, experiments, prototypes, and academic
+    environments.
+
+2. Commercial Restrictions
+
+Without explicit written permission from Intelligaia, you may NOT:
+
+  - Sell the Work or derivative works.
+  - Offer the Work as a hosted or managed commercial service.
+  - Rebrand the Work or present it as your own framework / platform.
+  - Redistribute premium assets, templates, illustrations, or proprietary
+    visual systems.
+  - Use the Work to build a competing commercial platform or product.
+  - White-label the Work for commercial customers.
+  - Include the Work in paid SaaS products where the Work represents a
+    substantial portion of the product value.
+
+3. AI and Model Training Restrictions
+
+You may NOT use the Work, associated assets, prompts, workflows,
+documentation, illustrations, datasets, or design systems for:
+
+  - training machine learning models,
+  - fine-tuning foundation models,
+  - synthetic dataset generation,
+  - embedding extraction at scale,
+  - autonomous AI knowledge replication,
+
+without prior written approval from Intelligaia.
+
+4. Attribution Requirement
+
+Any public usage or redistribution of the Work must include visible
+attribution:
+
+  "Powered by Intelligaia"
+
+  or
+
+  "Built using Intelligaia Frameworks"
+
+along with a link to:
+
+  https://www.intelligaia.com/
+
+Attribution must not be removed from source distributions.
+
+5. Trademark and Brand Protection
+
+This license does NOT grant rights to:
+
+  - the Intelligaia name,
+  - logos,
+  - trademarks,
+  - product names,
+  - framework names,
+  - visual identity,
+  - marketing assets,
+  - brand illustrations.
+
+You may not imply endorsement, partnership, or official affiliation with
+Intelligaia without written permission.
+
+6. Design and Visual Asset Protection
+
+Unless otherwise stated, all illustrations, icons, graphics, animations,
+visual systems, motion assets, templates, presentation layouts, and
+branded design elements remain proprietary to Intelligaia.
+
+These assets may not be:
+
+  - resold,
+  - redistributed commercially,
+  - repackaged,
+  - included in design marketplaces,
+  - used in competing design systems,
+
+without written permission.
+
+7. Contributions
+
+By contributing code, documentation, or assets to the Work, you grant
+Intelligaia a perpetual, worldwide, non-exclusive, royalty-free license to
+use, modify, distribute, and sublicense your contribution.
+
+You affirm that:
+
+  - you own the contribution, or
+  - you have the legal right to contribute it.
+
+8. Patent Grant
+
+Contributors grant Intelligaia and users of the Work a non-exclusive
+patent license covering contributed material.
+
+If you initiate patent litigation related to the Work, your rights under
+this license terminate immediately.
+
+9. No Warranty
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO MERCHANTABILITY, FITNESS FOR A
+PARTICULAR PURPOSE, AND NON-INFRINGEMENT.
+
+10. Limitation of Liability
+
+IN NO EVENT SHALL INTELLIGAIA OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM,
+DAMAGES, OR OTHER LIABILITY ARISING FROM THE USE OF THE WORK.
+
+11. Termination
+
+Violation of any condition in this license automatically terminates your
+rights under this license.
+
+Rights may be reinstated only through written approval from Intelligaia.
+
+12. Future Licensing
+
+Intelligaia reserves the right to:
+
+  - offer commercial licenses,
+  - dual-license the Work,
+  - change future licensing terms,
+  - release enterprise editions,
+  - create proprietary extensions.
+
+Previous versions remain governed by the license version distributed with
+them.
+
+13. Definitions
+
+"Work" includes:
+
+  - source code,
+  - binaries,
+  - prompts,
+  - workflows,
+  - APIs,
+  - design systems,
+  - component libraries,
+  - documentation,
+  - visual systems,
+  - schemas,
+  - datasets,
+  - templates,
+  - generated examples,
+  - configuration,
+  - diagrams,
+  - illustrations,
+  - agentic interaction patterns.
+
+14. Governing Law
+
+This license shall be governed by the laws applicable in the jurisdiction
+of Intelligaia's principal operating entity.

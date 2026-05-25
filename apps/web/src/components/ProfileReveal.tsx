@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, type ReactNode } from "react";
+import { brand } from "@/lib/brand";
 
 interface Props {
   children: ReactNode;
@@ -115,13 +116,15 @@ export function ProfileReveal({ children }: Props) {
           <div className="flex flex-col items-center mb-8">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/profile/logo-dark.svg"
-              alt="Intelligaia"
+              src={brand.logoDark}
+              alt={brand.shortName}
               className="h-[24px] w-auto"
             />
-            <p className="mt-2 text-[13px] text-[#141414]/60 font-normal">
-              humanizing AI for enterprises
-            </p>
+            {brand.tagline && (
+              <p className="mt-2 text-[13px] text-[#141414]/60 font-normal">
+                {brand.tagline}
+              </p>
+            )}
           </div>
 
           {/* Loading indicator — only if animation done but images still loading */}

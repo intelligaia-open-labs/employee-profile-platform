@@ -1,3 +1,5 @@
+import { brand } from "@/lib/brand";
+
 export default function ProfileLoading() {
   return (
     <div className="min-h-screen bg-[#fbfbfb] flex flex-col items-center justify-center px-8">
@@ -10,10 +12,12 @@ export default function ProfileLoading() {
       {/* Logo */}
       <div className="flex flex-col items-center mb-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/profile/logo-dark.svg" alt="Intelligaia" className="h-[24px] w-auto" />
-        <p className="mt-2 text-[13px] text-[#141414]/60">
-          humanizing AI for enterprises
-        </p>
+        <img src={brand.logoDark} alt={brand.shortName} className="h-[24px] w-auto" />
+        {brand.tagline && (
+          <p className="mt-2 text-[13px] text-[#141414]/60">
+            {brand.tagline}
+          </p>
+        )}
       </div>
 
       {/* Spinner */}

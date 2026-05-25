@@ -31,7 +31,8 @@ for (const vp of VIEWPORTS) {
       const root = document.querySelector(".animate-content-enter") as HTMLElement | null;
       const hero = root?.querySelector("div.absolute.bg-\\[\\#121212\\]") ?? null;
       const name = root?.querySelector("h1") ?? null;
-      const logo = root?.querySelector('img[alt="Intelligaia"]') ?? null;
+      // Brand logo: matches whatever NEXT_PUBLIC_BRAND_LOGO_LIGHT resolves to.
+      const logo = root?.querySelector('img[src*="logo"]') ?? null;
       const card = root?.querySelector(".bg-white.rounded-\\[18px\\]") ?? null;
       const photo = root?.querySelector(".rounded-full.border-4.border-white") ?? null;
 

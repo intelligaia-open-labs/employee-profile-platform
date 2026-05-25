@@ -8,6 +8,7 @@ const envSchema = z.object({
   BASE_URL: z.string().default("http://localhost:4000"),
   PUBLIC_URL: z.string().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  COMPANY_NAME: z.string().optional(),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   AWS_REGION: z.string().default("us-east-1"),

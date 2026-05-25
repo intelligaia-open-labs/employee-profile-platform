@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/intelligaia-open-labs/employee-profile-platform/security/policy
+    about: Do NOT open a public issue. See SECURITY.md for private disclosure.
+  - name: Licensing or commercial use
+    url: https://github.com/intelligaia-open-labs/employee-profile-platform/blob/main/LICENSE
+    about: For commercial / hosted-service licensing, email licensing@intelligaia.com.

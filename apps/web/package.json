@@ -1,6 +1,10 @@
 {
   "name": "@business-profile/web",
   "version": "1.0.0",
+  "description": "Next.js web app for the Employee Profile Platform.",
+  "private": true,
+  "license": "SEE LICENSE IN ../../LICENSE",
+  "author": "Intelligaia (https://www.intelligaia.com/)",
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",

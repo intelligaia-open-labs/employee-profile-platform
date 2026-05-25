@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { brand } from "@/lib/brand";
 
 export default function HomePage() {
   return (
@@ -19,7 +20,7 @@ export default function HomePage() {
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-xl">
         {/* Logo */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/profile/logo.svg" alt="Logo" className="h-10 w-auto mb-12 opacity-80" />
+        <img src={brand.logoLight} alt={brand.shortName} className="h-10 w-auto mb-12 opacity-80" />
 
         <h1 className="text-[clamp(2.5rem,8vw,4.5rem)] font-bold leading-[1.05] tracking-tight text-white">
           Digital Business
@@ -41,9 +42,18 @@ export default function HomePage() {
           </Button>
         </div>
 
-        <p className="mt-16 text-white/25 text-[10px] tracking-[0.3em] uppercase font-medium">
+        {/*
+          ISAL v1.0 §4 attribution — required for public deployments.
+          Removing this notice requires a commercial license. See COMMERCIAL_USE.md.
+        */}
+        <a
+          href="https://www.intelligaia.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-16 text-white/25 text-[10px] tracking-[0.3em] uppercase font-medium hover:text-white/40 transition-colors"
+        >
           Powered by Intelligaia
-        </p>
+        </a>
       </div>
     </main>
   );

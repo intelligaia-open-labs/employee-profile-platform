@@ -1,6 +1,10 @@
 {
   "name": "@business-profile/api",
   "version": "1.0.0",
+  "description": "Express API for the Employee Profile Platform.",
+  "private": true,
+  "license": "SEE LICENSE IN ../../LICENSE",
+  "author": "Intelligaia (https://www.intelligaia.com/)",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",

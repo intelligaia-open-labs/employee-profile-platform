@@ -1,3 +1,5 @@
+import { brand } from "../config/brand";
+
 interface PhoneEntry {
   country_code: string;
   number: string;
@@ -27,7 +29,7 @@ export function generateVCard(data: VCardData): string {
     "VERSION:3.0",
     `N:${lastName};${firstName};;;`,
     `FN:${data.full_name}`,
-    `ORG:Intelligaia Technologies Pvt. Ltd.`,
+    `ORG:${brand.name}`,
     `TITLE:${data.designation}`,
   ];
 

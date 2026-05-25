@@ -1,6 +1,22 @@
 {
   "name": "business-profile",
+  "version": "1.0.0",
+  "description": "Employee profile platform — public profiles, QR codes, vCard, and per-employee analytics. Source-available under ISAL v1.0.",
   "private": true,
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Intelligaia (https://www.intelligaia.com/)",
+  "homepage": "https://github.com/intelligaia-open-labs/employee-profile-platform#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/intelligaia-open-labs/employee-profile-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/intelligaia-open-labs/employee-profile-platform/issues"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "workspaces": [
     "packages/*",
     "apps/*"

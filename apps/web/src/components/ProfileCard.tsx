@@ -6,6 +6,7 @@ import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { MeetingDialog } from "./MeetingDialog";
 import { resolveImageUrl } from "@/lib/image";
+import { brand, brandAddressLines } from "@/lib/brand";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -259,14 +260,16 @@ export function ProfileCard({ employee }: Props) {
           <div className="absolute left-0 top-1/2 -translate-y-1/2 flex flex-col items-start gap-[2px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/profile/logo.svg"
-              alt="Intelligaia"
+              src={brand.logoLight}
+              alt={brand.shortName}
               className="h-[30px] w-auto select-none"
               draggable={false}
             />
-            <p className="text-[9.47px] leading-[14px] text-white font-normal tracking-[0.01em]">
-              humanizing AI for enterprises
-            </p>
+            {brand.tagline && (
+              <p className="text-[9.47px] leading-[14px] text-white font-normal tracking-[0.01em]">
+                {brand.tagline}
+              </p>
+            )}
           </div>
         </div>
 
@@ -309,8 +312,8 @@ export function ProfileCard({ employee }: Props) {
             </h1>
             <div className="flex flex-col gap-[4px] text-[16px] w-full px-[8px]">
               <p className="font-medium leading-[20px]">{employee.designation}</p>
-              <p className="font-bold leading-[20px]">Intelligaia Technologies Pvt. Ltd.</p>
-              <p className="font-medium leading-[20px]">intelligaia.com</p>
+              <p className="font-bold leading-[20px]">{brand.name}</p>
+              <p className="font-medium leading-[20px]">{brand.website}</p>
             </div>
           </div>
 
@@ -502,37 +505,53 @@ export function ProfileCard({ employee }: Props) {
             </div>
           </div>
 
-          <DashedDivider />
+          {(() => {
+            const addressLines = brandAddressLines();
+            const hasAddress = addressLines.length > 0;
+            const showCompanyCard = Boolean(brand.subtitle) || hasAddress;
+            if (!showCompanyCard) return null;
+            return (
+              <>
+                <DashedDivider />
 
-          {/* Company */}
-          <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px]">
-            <CardHeader
-              title="Intelligaia Technologies Pvt. Ltd."
-              subtitle="AI-Centered Design & Engineering"
-            />
-            <div className="flex gap-[12px] items-start w-full">
-              <p className="flex-1 text-[12px] font-normal text-[#727272] leading-[14px] pt-[2px]">
-                Address
-              </p>
-              <div className="flex flex-col gap-[12px] items-end min-w-0">
-                <p className="text-[12px] font-medium text-[#727272] leading-[16px] text-right">
-                  Plot I-63,<br />
-                  Sector 83, Alpha I.T. City,<br />
-                  Mohali, Punjab - 140306<br />
-                  India
-                </p>
-                <a
-                  href="https://maps.app.goo.gl/x33db9KgBQ7Skz3Z9"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`inline-flex gap-[6px] items-center justify-center bg-[#f9d852] text-[#121212] text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:brightness-95 transition-[filter] whitespace-nowrap ${focusRing}`}
-                >
-                  {Glyph.paperPlane(12)}
-                  Get directions
-                </a>
-              </div>
-            </div>
-          </div>
+                {/* Company */}
+                <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px]">
+                  <CardHeader
+                    title={brand.name}
+                    subtitle={brand.subtitle}
+                  />
+                  {hasAddress && (
+                    <div className="flex gap-[12px] items-start w-full">
+                      <p className="flex-1 text-[12px] font-normal text-[#727272] leading-[14px] pt-[2px]">
+                        Address
+                      </p>
+                      <div className="flex flex-col gap-[12px] items-end min-w-0">
+                        <p className="text-[12px] font-medium text-[#727272] leading-[16px] text-right">
+                          {addressLines.map((line, i) => (
+                            <span key={i}>
+                              {line}
+                              {i < addressLines.length - 1 && <br />}
+                            </span>
+                          ))}
+                        </p>
+                        {brand.mapUrl && (
+                          <a
+                            href={brand.mapUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`inline-flex gap-[6px] items-center justify-center bg-[#f9d852] text-[#121212] text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:brightness-95 transition-[filter] whitespace-nowrap ${focusRing}`}
+                          >
+                            {Glyph.paperPlane(12)}
+                            Get directions
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            );
+          })()}
         </div>
         {/* end of cards stack */}
       </div>
