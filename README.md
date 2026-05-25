@@ -8,28 +8,15 @@ A digital business-card and employee-profile platform: each employee gets a publ
 
 ## Screenshots & demo
 
-<!--
-  Add screenshots and a short demo video here. Suggested captures:
-    - Public profile page (desktop + mobile)
-    - QR code modal / share sheet
-    - Admin dashboard with the employee list
-    - Analytics drill-down for a single employee
-    - Employee self-service portal
+> 🚧 Screenshots and a short walkthrough video are coming soon. In the meantime, you can see the platform in action by cloning the repo and following the [Quickstart](#quickstart) below.
 
-  Place files under `docs/screenshots/` and reference them with relative paths.
-  For a demo video, host it (YouTube / Loom) and embed the thumbnail, or commit
-  a short MP4 / GIF under `docs/screenshots/` (keep it under ~5 MB).
--->
+Planned captures (see [`docs/screenshots/`](./docs/screenshots/) for filename conventions when contributing):
 
-| Public profile (desktop) | Public profile (mobile) | Admin dashboard |
-|---|---|---|
-| ![Public profile — desktop](docs/screenshots/profile-desktop.png) | ![Public profile — mobile](docs/screenshots/profile-mobile.png) | ![Admin dashboard](docs/screenshots/admin-dashboard.png) |
-
-| Per-employee analytics | QR share | Employee portal |
-|---|---|---|
-| ![Analytics drill-down](docs/screenshots/analytics-detail.png) | ![QR code modal](docs/screenshots/qr-share.png) | ![Employee self-service portal](docs/screenshots/employee-portal.png) |
-
-> Drop your captures into `docs/screenshots/` using the filenames above to populate the grid. A 30-second walkthrough video (Loom / YouTube embed or `docs/screenshots/demo.gif`) is also welcome — link it from a "Watch a 30-second tour" line directly above the grid.
+- Public profile page (desktop + mobile)
+- Admin dashboard with the employee list
+- Per-employee analytics drill-down
+- QR code / share modal
+- Employee self-service portal
 
 ---
 
