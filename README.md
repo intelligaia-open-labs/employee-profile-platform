@@ -6,17 +6,17 @@ A digital business-card and employee-profile platform: each employee gets a publ
 
 ---
 
-## Screenshots & demo
+## Screenshots
 
-> 🚧 Screenshots and a short walkthrough video are coming soon. In the meantime, you can see the platform in action by cloning the repo and following the [Quickstart](#quickstart) below.
+| Public profile (desktop) | Public profile (mobile) | QR share |
+|---|---|---|
+| ![Public profile — desktop](docs/screenshots/profile-desktop.png) | ![Public profile — mobile](docs/screenshots/profile-mobile.png) | ![QR code modal](docs/screenshots/qr-share.png) |
 
-Planned captures (see [`docs/screenshots/`](./docs/screenshots/) for filename conventions when contributing):
+| Admin dashboard | Per-employee analytics | Employee editor |
+|---|---|---|
+| ![Admin dashboard](docs/screenshots/admin-dashboard.png) | ![Analytics drill-down](docs/screenshots/analytics-detail.png) | ![Employee self-service editor](docs/screenshots/employee-portal.png) |
 
-- Public profile page (desktop + mobile)
-- Admin dashboard with the employee list
-- Per-employee analytics drill-down
-- QR code / share modal
-- Employee self-service portal
+> Screenshots use a fictional demo dataset created by [`scripts/seed-demo.ts`](./scripts/seed-demo.ts). To regenerate them after UI changes: run `npm run dev`, then `npx tsx scripts/seed-demo.ts` and `npx tsx scripts/capture-screenshots.ts`.
 
 ---
 
