@@ -31,6 +31,7 @@ model Employee {
   website_url   String?
   calendar_url  String?
   address       String?
+  country       String?  // ISO-2 region code: "IN" or "US". Drives regional brand resolution.
   quick_actions String[] @default(["call", "email", "whatsapp", "add_contact"])
   is_active     Boolean  @default(true)
   created_at    DateTime @default(now())

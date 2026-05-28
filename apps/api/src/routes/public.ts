@@ -121,6 +121,7 @@ publicRouter.get("/vcard/:slug", async (req: Request, res: Response, next: NextF
       website_url: employee.website_url,
       linkedin_url: employee.linkedin_url,
       address: employee.address,
+      country: employee.country,
       social_links: employee.social_links,
     });
 

@@ -1,4 +1,4 @@
-import { brand } from "../config/brand";
+import { brandNameFor } from "../config/brand";
 
 interface PhoneEntry {
   country_code: string;
@@ -16,6 +16,8 @@ interface VCardData {
   website_url?: string | null;
   linkedin_url?: string | null;
   address?: string | null;
+  /** ISO-2 region code ("IN" | "US"); drives the ORG line. */
+  country?: string | null;
   social_links?: { platform: string; url: string }[];
 }
 
@@ -29,7 +31,7 @@ export function generateVCard(data: VCardData): string {
     "VERSION:3.0",
     `N:${lastName};${firstName};;;`,
     `FN:${data.full_name}`,
-    `ORG:${brand.name}`,
+    `ORG:${brandNameFor(data.country)}`,
     `TITLE:${data.designation}`,
   ];
 

@@ -27,6 +27,7 @@ export const createEmployeeSchema = z.object({
   website_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   calendar_url: z.string().url("Invalid URL").optional().or(z.literal("")),
   address: z.string().max(300).optional(),
+  country: z.enum(["IN", "US"]).optional(),
   quick_actions: z.array(z.string()).optional(),
   social_links: z.array(socialLinkSchema).optional(),
   phone_numbers: z.array(phoneNumberSchema).optional(),

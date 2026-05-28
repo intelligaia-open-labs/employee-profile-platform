@@ -6,7 +6,7 @@ import type { EmployeePublic } from "@business-profile/shared";
 import Image from "next/image";
 import { MeetingDialog } from "./MeetingDialog";
 import { resolveImageUrl } from "@/lib/image";
-import { brand, brandAddressLines } from "@/lib/brand";
+import { brand, brandAddressLines, brandFor } from "@/lib/brand";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
@@ -312,7 +312,7 @@ export function ProfileCard({ employee }: Props) {
             </h1>
             <div className="flex flex-col gap-[4px] text-[16px] w-full px-[8px]">
               <p className="font-medium leading-[20px]">{employee.designation}</p>
-              <p className="font-bold leading-[20px]">{brand.name}</p>
+              <p className="font-bold leading-[20px]">{brandFor(employee.country).name}</p>
               <p className="font-medium leading-[20px]">{brand.website}</p>
             </div>
           </div>
@@ -490,14 +490,14 @@ export function ProfileCard({ employee }: Props) {
                   href={employee.calendar_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`w-full border border-[#121212] text-[#121212] text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#f5f5f5] transition-colors ${focusRing}`}
+                  className={`w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors ${focusRing}`}
                 >
                   Add to Calendar
                 </a>
               ) : (
                 <button
                   onClick={() => setMeetingOpen(true)}
-                  className={`w-full border border-[#121212] text-[#121212] text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#f5f5f5] transition-colors ${focusRing}`}
+                  className={`w-full bg-[#121212] text-white text-[12px] font-medium leading-[14px] py-[10px] px-[16px] rounded-full text-center hover:bg-[#2a2a2a] transition-colors ${focusRing}`}
                 >
                   Add to Calendar
                 </button>
@@ -506,7 +506,8 @@ export function ProfileCard({ employee }: Props) {
           </div>
 
           {(() => {
-            const addressLines = brandAddressLines();
+            const regional = brandFor(employee.country);
+            const addressLines = brandAddressLines(regional.address);
             const hasAddress = addressLines.length > 0;
             const showCompanyCard = Boolean(brand.subtitle) || hasAddress;
             if (!showCompanyCard) return null;
@@ -517,7 +518,7 @@ export function ProfileCard({ employee }: Props) {
                 {/* Company */}
                 <div className="bg-white rounded-[18px] p-[16px] w-full flex flex-col gap-[16px]">
                   <CardHeader
-                    title={brand.name}
+                    title={regional.name}
                     subtitle={brand.subtitle}
                   />
                   {hasAddress && (
@@ -534,9 +535,9 @@ export function ProfileCard({ employee }: Props) {
                             </span>
                           ))}
                         </p>
-                        {brand.mapUrl && (
+                        {regional.mapUrl && (
                           <a
-                            href={brand.mapUrl}
+                            href={regional.mapUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className={`inline-flex gap-[6px] items-center justify-center bg-[#f9d852] text-[#121212] text-[12px] font-medium leading-[18px] px-[16px] py-[6px] rounded-full hover:brightness-95 transition-[filter] whitespace-nowrap ${focusRing}`}

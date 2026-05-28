@@ -115,6 +115,8 @@ The web app will be at <http://localhost:3000>, the API at <http://localhost:400
 | `PUBLIC_URL` | no | `http://localhost:3000` | Public-facing web URL (used in QR codes) |
 | `NODE_ENV` | no | `development` | `development` / `production` / `test` |
 | `COMPANY_NAME` | no | `Your Company` | Used in the vCard `ORG:` field. Keep in sync with `NEXT_PUBLIC_BRAND_NAME` |
+| `COMPANY_NAME_IN` | no | (falls back to `COMPANY_NAME`) | Regional ORG name for employees with `country = IN` |
+| `COMPANY_NAME_US` | no | (falls back to `COMPANY_NAME`) | Regional ORG name for employees with `country = US` |
 | `AWS_ACCESS_KEY_ID` | no | — | If set with secret + bucket, enables S3 uploads |
 | `AWS_SECRET_ACCESS_KEY` | no | — | Pair with access key |
 | `AWS_REGION` | no | `us-east-1` | S3 region |
@@ -134,8 +136,16 @@ The web app will be at <http://localhost:3000>, the API at <http://localhost:400
 | `NEXT_PUBLIC_BRAND_MAP_URL` | no | `""` | Maps URL for the "Get directions" button. Button hidden when blank |
 | `NEXT_PUBLIC_BRAND_LOGO_LIGHT` | no | `/profile/logo.svg` | Path or URL to the light-background logo |
 | `NEXT_PUBLIC_BRAND_LOGO_DARK` | no | `/profile/logo-dark.svg` | Path or URL to the dark-background logo |
+| `NEXT_PUBLIC_BRAND_NAME_IN` | no | (falls back to `NEXT_PUBLIC_BRAND_NAME`) | Company name for employees tagged `country = IN` |
+| `NEXT_PUBLIC_BRAND_ADDRESS_IN` | no | (falls back to `NEXT_PUBLIC_BRAND_ADDRESS`) | Multi-line India address. Use `\n` between lines |
+| `NEXT_PUBLIC_BRAND_MAP_URL_IN` | no | (falls back to `NEXT_PUBLIC_BRAND_MAP_URL`) | India Maps link for the "Get directions" button |
+| `NEXT_PUBLIC_BRAND_NAME_US` | no | (falls back to `NEXT_PUBLIC_BRAND_NAME`) | Company name for employees tagged `country = US` |
+| `NEXT_PUBLIC_BRAND_ADDRESS_US` | no | (falls back to `NEXT_PUBLIC_BRAND_ADDRESS`) | Multi-line US address. Use `\n` between lines |
+| `NEXT_PUBLIC_BRAND_MAP_URL_US` | no | (falls back to `NEXT_PUBLIC_BRAND_MAP_URL`) | US Maps link for the "Get directions" button |
 
 > **Replacing the logo:** drop your own SVG/PNG into `apps/web/public/profile/` and point the `NEXT_PUBLIC_BRAND_LOGO_*` vars at it, or keep the default filenames and overwrite the files in place. The defaults are sized for a 24–30px display height.
+
+> **Regional brand:** each employee can be tagged with a country (`IN` / `US`) via the admin form. When set, the profile card and vCard pull the company name + address from the matching `NEXT_PUBLIC_BRAND_*_<REGION>` vars. When unset, the default brand is used. Useful if you operate under different legal entities in multiple countries.
 
 ### `packages/db/.env`
 

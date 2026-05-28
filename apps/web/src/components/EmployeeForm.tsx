@@ -58,6 +58,7 @@ export function EmployeeForm({ employee }: Props) {
     website_url: employee?.website_url ?? "",
     calendar_url: employee?.calendar_url ?? "",
     address: employee?.address ?? "",
+    country: employee?.country ?? "",
   });
 
   // Build initial social profiles from existing data
@@ -427,13 +428,31 @@ export function EmployeeForm({ employee }: Props) {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input
-              id="address"
-              value={form.address}
-              onChange={(e) => handleChange("address", e.target.value)}
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-[1fr_180px] gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="address">Address</Label>
+              <Input
+                id="address"
+                value={form.address}
+                onChange={(e) => handleChange("address", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="country">Country / region</Label>
+              <select
+                id="country"
+                value={form.country}
+                onChange={(e) => handleChange("country", e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+              >
+                <option value="">— Select —</option>
+                <option value="IN">India</option>
+                <option value="US">United States</option>
+              </select>
+              <p className="text-xs text-muted-foreground">
+                Drives the company name and address shown on the public profile.
+              </p>
+            </div>
           </div>
 
           <div className="space-y-2">
